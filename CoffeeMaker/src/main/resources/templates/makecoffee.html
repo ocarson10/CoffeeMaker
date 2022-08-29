@@ -28,7 +28,7 @@
 					$scope.submissionSuccess = false;
 					$http.post("/api/v1/makecoffee/" + name, amtPaid).then(
 							function(response) {
-								$scope.change = response.data;
+								$scope.change = response.data.message;
 								$scope.submissionSuccess = true;
 							}, function(errResponse) {
 								console.log(errResponse);
