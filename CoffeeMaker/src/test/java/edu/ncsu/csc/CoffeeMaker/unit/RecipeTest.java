@@ -13,6 +13,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
+import org.junit.Assert;
 
 import edu.ncsu.csc.CoffeeMaker.TestConfig;
 import edu.ncsu.csc.CoffeeMaker.models.Recipe;
@@ -295,6 +296,76 @@ public class RecipeTest {
         Assertions.assertEquals( 1, service.count(), "Editing a recipe shouldn't duplicate it" );
 
     }
+    
+    @Test
+    @Transactional
+    public void testCheckRecipe () {
+
+        final Recipe r1 = new Recipe();
+        
+        r1.setName( "Black Coffee" );
+        r1.setPrice( 1 );
+        r1.setCoffee( 1 );
+        r1.setMilk( 0 );
+        r1.setSugar( 0 );
+        r1.setChocolate( 0 );
+        service.save( r1 );
+        boolean check = r1.checkRecipe(); 
+
+        Assert.assertFalse(check);
+        
+        r1.setCoffee(0);
+        check = r1.checkRecipe(); 
+        service.save(r1);
+        Assert.assertTrue(check);
+
+
+        final Recipe r2 = new Recipe();
+        r2.setName( "Mocha" );
+        r2.setPrice( 1 );
+        r2.setCoffee( 1 );
+        r2.setMilk( 1 );
+        r2.setSugar( 1 );
+        r2.setChocolate( 1 );
+        service.save( r2 );
+        
+        final Recipe r3 = new Recipe();
+        r3.setName( "Mocha" );
+        r3.setPrice( 1 );
+        r3.setCoffee( 1 );
+        r3.setMilk( 1 );
+        r3.setSugar( 1 );
+        r3.setChocolate( 1 );
+        service.save( r2 );
+        
+        /*
+         * Tests if two recipes are the same
+         */
+        Assert.assertTrue(r2.equals(r3));
+        
+        /*
+         * Tests hashcode of recipe 1 
+         */
+        Assert.assertEquals(857262956, r1.hashCode());
+        
+        /*
+         * Tests if recipe was updated correctly to the one passed in   
+         */
+        r1.updateRecipe(r2);
+        Assert.assertEquals(r1.getMilk(), r2.getMilk());
+        
+        /*
+         * Tests if the string returned was the correct name of the recipe
+         */
+        Assert.assertEquals("Mocha", r2.toString());
+//
+//        final List<Recipe> recipes = service.findAll();
+//        Assertions.assertEquals( 2, recipes.size(),
+//                "Creating two recipes should result in two recipes in the database" );
+//
+//        Assertions.assertEquals( r1, recipes.get( 0 ), "The retrieved recipe should match the created one" );
+    }
+    
 
     private Recipe createRecipe ( final String name, final Integer price, final Integer coffee, final Integer milk,
             final Integer sugar, final Integer chocolate ) {
@@ -308,5 +379,7 @@ public class RecipeTest {
 
         return recipe;
     }
+    
+    
 
 }
