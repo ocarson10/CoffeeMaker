@@ -59,6 +59,20 @@ public class TestDatabaseInteraction {
         final Recipe dbRecipeByName = recipeService.findByName( "Mocha" );
 
         assertEquals( r.getChocolate(), dbRecipeByName.getChocolate() );
+        
+        // edit recipe 
+        dbRecipe.setPrice( 12 );
+        dbRecipe.setSugar( 2 );
+        dbRecipe.setMilk(14);
+        recipeService.save( dbRecipe );
+
+        assertEquals( 1, recipeService.count() );
+
+        // verify edited recipe 
+        assertEquals( 12, (int) ( (Recipe) recipeService.findAll().get( 0 ) ).getPrice() );
+        
+        assertEquals(2, (int)((Recipe) recipeService.findAll().get(0)).getSugar());
+        assertEquals(14, (int)((Recipe) recipeService.findAll().get(0)).getMilk());
 
     }
 }
