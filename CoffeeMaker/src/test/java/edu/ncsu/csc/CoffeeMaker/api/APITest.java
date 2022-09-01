@@ -1,14 +1,14 @@
 package edu.ncsu.csc.CoffeeMaker.api;
 
+import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import javax.transaction.Transactional;
-
 import org.junit.Before;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -17,9 +17,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import edu.ncsu.csc.CoffeeMaker.common.TestUtils;
+import edu.ncsu.csc.CoffeeMaker.models.Inventory;
 import edu.ncsu.csc.CoffeeMaker.models.Recipe;
 
 @RunWith ( SpringRunner.class )
@@ -47,7 +49,7 @@ public class APITest {
     @Test
     @Transactional
     public void testAPI () throws Exception {
-        final String recipe = mvc.perform( get( "/api/v1/recipes" ) ).andDo( print() ).andExpect( status().isOk() )
+        String recipe = mvc.perform( get( "/api/v1/recipes" ) ).andDo( print() ).andExpect( status().isOk() )
                 .andReturn().getResponse().getContentAsString();
         if ( !recipe.contains( "Mocha" ) ) {
             // create a new Mocha recipe
@@ -63,5 +65,16 @@ public class APITest {
                     .content( TestUtils.asJsonString( r ) ) ).andExpect( status().isOk() );
 
         }
+
+        recipe = mvc.perform( get( "/api/v1/recipes" ) ).andDo( print() ).andExpect( status().isOk() ).andReturn()
+                .getResponse().getContentAsString();
+
+        assertTrue( recipe.contains(
+                "Mocha" ) ); /* Make sure that now our recipe is there */
+
+        final Inventory i = new Inventory( 50, 50, 50, 50 );
+
+        mvc.perform( put( "/api/v1/inventory" ).contentType( MediaType.APPLICATION_JSON )
+                .content( TestUtils.asJsonString( i ) ) ).andExpect( status().isOk() );
     }
 }
