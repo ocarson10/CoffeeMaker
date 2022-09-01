@@ -76,5 +76,8 @@ public class APITest {
 
         mvc.perform( put( "/api/v1/inventory" ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( i ) ) ).andExpect( status().isOk() );
+        
+        mvc.perform( post( String.format( "/api/v1/makecoffee/%s", "Mocha" ) ).contentType( MediaType.APPLICATION_JSON )
+                .content( TestUtils.asJsonString( 100 ) ) ).andExpect( status().isOk() ).andDo( print() );
     }
 }
