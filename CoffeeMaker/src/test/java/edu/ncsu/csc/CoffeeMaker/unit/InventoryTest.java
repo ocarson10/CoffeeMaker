@@ -185,5 +185,67 @@ public class InventoryTest {
         }
 
     }
+    
+    @Test
+    @Transactional
+    public void testCheckInventory () {
+        final Inventory i = new Inventory(500, 500, 500, 500);
+
+        final Recipe recipe = new Recipe();
+        recipe.setName( "Delicious Not-Coffee" );
+        recipe.setChocolate( 10 );
+        recipe.setMilk( 20 );
+        recipe.setSugar( 5 );
+        recipe.setCoffee( 1 );
+
+        recipe.setPrice( 5 );
+
+        i.useIngredients( recipe );
+
+        /*
+         * Make sure that all of the inventory fields are now properly updated
+         */
+        Assert.assertEquals( 490, (int) i.getChocolate() );
+        Assert.assertEquals( 480, (int) i.getMilk() );
+        Assert.assertEquals( 495, (int) i.getSugar() );
+        Assert.assertEquals( 499, (int) i.getCoffee() );
+        
+        // checking correct values for the ingredients
+        int checkChocolateInt = i.checkChocolate("4");
+        Assert.assertEquals(4, checkChocolateInt);
+        
+        int checkMilkInt = i.checkMilk("8");
+        Assert.assertEquals(8, checkMilkInt);
+        
+        int checkCoffeeInt = i.checkCoffee("12");
+        Assert.assertEquals(12, checkCoffeeInt);
+        
+        int checkSugarInt = i.checkSugar("20");
+        Assert.assertEquals(20, checkSugarInt);
+        
+        
+        // check invalid values for the ingredients
+        try {
+        	i.checkChocolate("-2"); 
+        } catch (final IllegalArgumentException iae) {
+        	Assert.assertEquals(490, (int)i.getChocolate());
+        }
+        
+        try {
+        	i.checkChocolate("-two"); 
+        } catch (final IllegalArgumentException iae) {
+        	Assert.assertEquals(490, (int)i.getChocolate());
+        }
+        
+        /* 
+         * Make sure that the string is printed appropriately 
+         * */
+        Assert.assertEquals("Coffee: 499\n"
+        		+ "Milk: 480\n"
+        		+ "Sugar: 495\n"
+        		+ "Chocolate: 490\n", i.toString());
+        
+        Assert.assertTrue(i.enoughIngredients(recipe));
+    }
 
 }
