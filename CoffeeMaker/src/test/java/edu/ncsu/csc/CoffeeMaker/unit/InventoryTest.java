@@ -1,7 +1,6 @@
 package edu.ncsu.csc.CoffeeMaker.unit;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -188,11 +187,11 @@ public class InventoryTest {
         }
 
     }
-    
+
     @Test
     @Transactional
     public void testCheckInventory () {
-        final Inventory i = new Inventory(500, 500, 500, 500);
+        final Inventory i = new Inventory( 500, 500, 500, 500 );
 
         final Recipe recipe = new Recipe();
         recipe.setName( "Delicious Not-Coffee" );
@@ -212,22 +211,60 @@ public class InventoryTest {
         Assert.assertEquals( 480, (int) i.getMilk() );
         Assert.assertEquals( 495, (int) i.getSugar() );
         Assert.assertEquals( 499, (int) i.getCoffee() );
-        
+
         // checking correct values for the ingredients
-        int checkChocolateInt = i.checkChocolate("4");
-        Assert.assertEquals(4, checkChocolateInt);
-        
-        int checkMilkInt = i.checkMilk("8");
-        Assert.assertEquals(8, checkMilkInt);
-        
-        int checkCoffeeInt = i.checkCoffee("12");
-        Assert.assertEquals(12, checkCoffeeInt);
-        
-        int checkSugarInt = i.checkSugar("20");
-        Assert.assertEquals(20, checkSugarInt);
-      
+        final int checkChocolateInt = i.checkChocolate( "4" );
+        Assert.assertEquals( 4, checkChocolateInt );
+
+        final int checkMilkInt = i.checkMilk( "8" );
+        Assert.assertEquals( 8, checkMilkInt );
+
+        final int checkCoffeeInt = i.checkCoffee( "12" );
+        Assert.assertEquals( 12, checkCoffeeInt );
+
+        final int checkSugarInt = i.checkSugar( "20" );
+        Assert.assertEquals( 20, checkSugarInt );
+
+        // check invalid values for the ingredients
+        try {
+            i.checkChocolate( "-2" );
+        }
+        catch ( final IllegalArgumentException iae ) {
+            Assert.assertEquals( 490, (int) i.getChocolate() );
+        }
+
+        try {
+            i.checkChocolate( "-two" );
+        }
+        catch ( final IllegalArgumentException iae ) {
+            Assert.assertEquals( 490, (int) i.getChocolate() );
+        }
+
+        /*
+         * Make sure that the string is printed appropriately
+         */
+        Assert.assertEquals( "Coffee: 499\n" + "Milk: 480\n" + "Sugar: 495\n" + "Chocolate: 490\n", i.toString() );
+
+        Assert.assertTrue( i.enoughIngredients( recipe ) );
     }
-    
+
+    // Chitra Srinivasan (csriniv) milestone 1 individual test #3
+    @Test
+    @Transactional
+    public void testEmptyInventory () {
+        inventoryService.deleteAll();
+        final Inventory i = inventoryService.getInventory();
+
+        final Recipe recipe = new Recipe();
+        recipe.setName( "Delicious Not-Coffee" );
+        recipe.setChocolate( 10 );
+        recipe.setMilk( 20 );
+        recipe.setSugar( 5 );
+        recipe.setCoffee( 1 );
+        recipe.setPrice( 5 );
+        assertFalse( i.enoughIngredients( recipe ) );
+
+    }
     
     @Test
     @Transactional
@@ -387,4 +424,5 @@ public class InventoryTest {
 	    
 	    Assert.assertTrue(i.enoughIngredients(recipe));
     }
+
 }
