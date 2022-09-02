@@ -1,5 +1,8 @@
 package edu.ncsu.csc.CoffeeMaker.unit;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -185,10 +188,88 @@ public class InventoryTest {
         }
 
     }
-    
+
     @Test
     @Transactional
     public void testCheckInventory () {
+        final Inventory i = new Inventory( 500, 500, 500, 500 );
+
+        final Recipe recipe = new Recipe();
+        recipe.setName( "Delicious Not-Coffee" );
+        recipe.setChocolate( 10 );
+        recipe.setMilk( 20 );
+        recipe.setSugar( 5 );
+        recipe.setCoffee( 1 );
+
+        recipe.setPrice( 5 );
+
+        i.useIngredients( recipe );
+
+        /*
+         * Make sure that all of the inventory fields are now properly updated
+         */
+        Assert.assertEquals( 490, (int) i.getChocolate() );
+        Assert.assertEquals( 480, (int) i.getMilk() );
+        Assert.assertEquals( 495, (int) i.getSugar() );
+        Assert.assertEquals( 499, (int) i.getCoffee() );
+
+        // checking correct values for the ingredients
+        final int checkChocolateInt = i.checkChocolate( "4" );
+        Assert.assertEquals( 4, checkChocolateInt );
+
+        final int checkMilkInt = i.checkMilk( "8" );
+        Assert.assertEquals( 8, checkMilkInt );
+
+        final int checkCoffeeInt = i.checkCoffee( "12" );
+        Assert.assertEquals( 12, checkCoffeeInt );
+
+        final int checkSugarInt = i.checkSugar( "20" );
+        Assert.assertEquals( 20, checkSugarInt );
+
+        // check invalid values for the ingredients
+        try {
+            i.checkChocolate( "-2" );
+        }
+        catch ( final IllegalArgumentException iae ) {
+            Assert.assertEquals( 490, (int) i.getChocolate() );
+        }
+
+        try {
+            i.checkChocolate( "-two" );
+        }
+        catch ( final IllegalArgumentException iae ) {
+            Assert.assertEquals( 490, (int) i.getChocolate() );
+        }
+
+        /*
+         * Make sure that the string is printed appropriately
+         */
+        Assert.assertEquals( "Coffee: 499\n" + "Milk: 480\n" + "Sugar: 495\n" + "Chocolate: 490\n", i.toString() );
+
+        Assert.assertTrue( i.enoughIngredients( recipe ) );
+    }
+
+    // Chitra Srinivasan (csriniv) milestone 1 individual test #3
+    @Test
+    @Transactional
+    public void testEmptyInventory () {
+        inventoryService.deleteAll();
+        final Inventory i = inventoryService.getInventory();
+
+        final Recipe recipe = new Recipe();
+        recipe.setName( "Delicious Not-Coffee" );
+        recipe.setChocolate( 10 );
+        recipe.setMilk( 20 );
+        recipe.setSugar( 5 );
+        recipe.setCoffee( 1 );
+        recipe.setPrice( 5 );
+        assertFalse( i.enoughIngredients( recipe ) );
+
+    }
+    
+    @Test
+    @Transactional
+    public void testInventoryInvalidChecks () {
         final Inventory i = new Inventory(500, 500, 500, 500);
 
         final Recipe recipe = new Recipe();
@@ -225,6 +306,7 @@ public class InventoryTest {
         
         
         // check invalid values for the ingredients
+        // invalid chocolate
         try {
         	i.checkChocolate("-2"); 
         } catch (final IllegalArgumentException iae) {
@@ -237,15 +319,111 @@ public class InventoryTest {
         	Assert.assertEquals(490, (int)i.getChocolate());
         }
         
-        /* 
-         * Make sure that the string is printed appropriately 
-         * */
-        Assert.assertEquals("Coffee: 499\n"
-        		+ "Milk: 480\n"
-        		+ "Sugar: 495\n"
-        		+ "Chocolate: 490\n", i.toString());
+        //invalid milk
+
+        try {
+        	i.checkMilk("-2"); 
+        } catch (final IllegalArgumentException iae) {
+        	Assert.assertEquals(480, (int)i.getMilk());
+        }
         
-        Assert.assertTrue(i.enoughIngredients(recipe));
+        try {
+        	i.checkMilk("-two"); 
+        } catch (final IllegalArgumentException iae) {
+        	Assert.assertEquals(480, (int)i.getMilk());
+        }
+        
+        //invalid sugar
+
+        try {
+        	i.checkSugar("-2"); 
+        } catch (final IllegalArgumentException iae) {
+        	Assert.assertEquals(495, (int)i.getSugar());
+        }
+        
+        try {
+        	i.checkSugar("-two"); 
+        } catch (final IllegalArgumentException iae) {
+        	Assert.assertEquals(495, (int)i.getSugar());
+        }
+        
+        //invalid coffee
+
+        try {
+        	i.checkCoffee("-2"); 
+        } catch (final IllegalArgumentException iae) {
+        	Assert.assertEquals(499, (int)i.getCoffee());
+        }
+        
+        try {
+        	i.checkCoffee("-two"); 
+        } catch (final IllegalArgumentException iae) {
+        	Assert.assertEquals(499, (int)i.getCoffee());
+        } 
+    }
+    
+    @Test
+    @Transactional
+    public void testCheckIsEnoughIngredients () {
+        final Inventory ivt = new Inventory(0, 0, 0, 0);
+
+        final Recipe recipe = new Recipe();
+        recipe.setName( "Delicious Not-Coffee" );
+        recipe.setChocolate( 10 );
+        recipe.setMilk( 20 );
+        recipe.setSugar( 5 );
+        recipe.setCoffee( 1 );
+
+        recipe.setPrice( 5 );
+        
+        /*
+         * makes sure that there is NOT enough ingredients for the recipe
+         */
+        assertFalse(ivt.enoughIngredients(recipe));
+
+        
+        final Inventory i = new Inventory(500, 500, 500, 500);
+        /*
+         * now there IS enough ingredients for the recipe
+         */
+        assertTrue(i.enoughIngredients(recipe));
+        i.useIngredients( recipe );
+
+        /*
+         * Make sure that all of the inventory fields are now properly updated
+         */
+        Assert.assertEquals( 490, (int) i.getChocolate() );
+        Assert.assertEquals( 480, (int) i.getMilk() );
+        Assert.assertEquals( 495, (int) i.getSugar() );
+        Assert.assertEquals( 499, (int) i.getCoffee() );
+      
+    }
+    
+    @Test
+    @Transactional
+    public void testToString () {
+        final Inventory i = new Inventory(500, 500, 500, 500);
+
+        final Recipe recipe = new Recipe();
+        recipe.setName( "Delicious Not-Coffee" );
+        recipe.setChocolate( 10 );
+        recipe.setMilk( 20 );
+        recipe.setSugar( 5 );
+        recipe.setCoffee( 1 );
+
+        recipe.setPrice( 5 );
+
+        i.useIngredients( recipe );
+        
+	    /* 
+	     * Make sure that the string is printed appropriately 
+	     * */
+	    Assert.assertEquals("Coffee: 499\n"
+	    		+ "Milk: 480\n"
+	    		+ "Sugar: 495\n"
+	    		+ "Chocolate: 490\n", i.toString());
+	    
+	    Assert.assertTrue(i.enoughIngredients(recipe));
     }
 
 }
