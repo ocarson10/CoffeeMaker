@@ -1,6 +1,8 @@
 package edu.ncsu.csc.CoffeeMaker.api;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import javax.transaction.Transactional;
@@ -96,10 +98,10 @@ public class APIRecipeTest {
         Assert.assertEquals( "There should be no Recipes in the CoffeeMaker", 0, service.findAll().size() );
         final String name = "Coffee";
         final Recipe r1 = createRecipe( name, 50, 3, 1, 1, 0 );
-
         service.save( r1 );
 
         final Recipe r2 = createRecipe( name, 50, 3, 1, 1, 0 );
+
         mvc.perform( post( "/api/v1/recipes" ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( r2 ) ) ).andExpect( status().is4xxClientError() );
 
@@ -143,6 +145,55 @@ public class APIRecipeTest {
         recipe.setChocolate( chocolate );
 
         return recipe;
+    }
+
+    // Chitra Srinivasan (csriniv) milestone 1 individual test #1
+    @Test
+    @Transactional
+    public void testGetInventory1 () throws Exception {
+
+        /* Tests to make sure that our cap of 3 recipes is enforced */
+
+        Assert.assertEquals( "There should be no Recipes in the CoffeeMaker", 0, service.findAll().size() );
+
+        final Recipe r1 = createRecipe( "Coffee", 50, 3, 1, 1, 0 );
+        service.save( r1 );
+        final Recipe r2 = createRecipe( "Mocha", 50, 3, 1, 1, 2 );
+        service.save( r2 );
+        final Recipe r3 = createRecipe( "Latte", 60, 3, 2, 2, 0 );
+        service.save( r3 );
+
+        Assert.assertEquals( "Creating three recipes should result in three recipes in the database", 3,
+                service.count() );
+
+        // final Recipe r4 = createRecipe( "Hot Chocolate", 75, 0, 2, 1, 2 );
+
+        mvc.perform( get( "/api/v1/inventory" ).contentType( MediaType.APPLICATION_JSON )
+                .content( TestUtils.asJsonString( r3 ) ) ).andExpect( status().isOk() );
+    }
+
+    // Chitra Srinivasan (csriniv) milestone 1 individual test #2
+    @Test
+    @Transactional
+    public void testGetRecipe1 () throws Exception {
+        final String recipe = mvc.perform( get( "/api/v1/recipes" ) ).andDo( print() ).andExpect( status().isOk() )
+                .andReturn().getResponse().getContentAsString();
+        if ( !recipe.contains( "Mocha" ) ) {
+            // create a new Mocha recipe
+            final Recipe r = new Recipe();
+            r.setChocolate( 2 );
+            r.setCoffee( 3 );
+            r.setMilk( 4 );
+            r.setName( "Mocha" );
+            r.setPrice( 5 );
+            r.setSugar( 6 );
+
+            mvc.perform( post( "/api/v1/recipes" ).contentType( MediaType.APPLICATION_JSON )
+                    .content( TestUtils.asJsonString( r ) ) ).andExpect( status().isOk() );
+        }
+
+        mvc.perform( get( String.format( "/api/v1/recipes/%s", "Mocha" ) ).contentType( MediaType.APPLICATION_JSON )
+                .content( TestUtils.asJsonString( recipe ) ) ).andExpect( status().isOk() );
     }
 
 }
