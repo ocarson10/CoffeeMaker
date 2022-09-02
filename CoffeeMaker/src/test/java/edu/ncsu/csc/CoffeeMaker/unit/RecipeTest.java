@@ -366,6 +366,42 @@ public class RecipeTest {
 //        Assertions.assertEquals( r1, recipes.get( 0 ), "The retrieved recipe should match the created one" );
     }
     
+    @Test
+    @Transactional
+    public void testRecipesNotEqual () {
+
+        final Recipe r1 = new Recipe();
+        
+        r1.setName( "Black Coffee" );
+        r1.setPrice( 1 );
+        r1.setCoffee( 1 );
+        r1.setMilk( 0 );
+        r1.setSugar( 0 );
+        r1.setChocolate( 0 );
+        service.save( r1 );
+        boolean check = r1.checkRecipe(); 
+
+        Assert.assertFalse(check);
+        
+        r1.setCoffee(0);
+        check = r1.checkRecipe(); 
+        service.save(r1);
+        Assert.assertTrue(check);
+
+
+        final Recipe r2 = new Recipe();
+        r2.setName( "Mocha" );
+        r2.setPrice( 1 );
+        r2.setCoffee( 1 );
+        r2.setMilk( 1 );
+        r2.setSugar( 1 );
+        r2.setChocolate( 1 );
+        service.save( r2 );
+        
+        Assert.assertFalse(r1.equals(r2));
+
+        
+    }
 
     private Recipe createRecipe ( final String name, final Integer price, final Integer coffee, final Integer milk,
             final Integer sugar, final Integer chocolate ) {
