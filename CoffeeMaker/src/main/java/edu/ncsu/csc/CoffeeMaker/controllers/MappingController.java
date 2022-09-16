@@ -94,4 +94,17 @@ public class MappingController {
         return "makecoffee";
     }
 
+    /**
+     * On a GET request to /customrecipe, the CustomRecipeController will return
+     * /src/main/resources/templates/customrecipe.html.
+     *
+     * @param model
+     *            underlying UI model
+     * @return contents of the page
+     */
+    @GetMapping ( { "/customrecipe", "/customrecipe.html" } )
+    public String addCustomRecipePage ( final Model model ) {
+        return "customrecipe";
+    }
+
 }
