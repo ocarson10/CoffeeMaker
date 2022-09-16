@@ -106,5 +106,18 @@ public class MappingController {
     public String addCustomRecipePage ( final Model model ) {
         return "customrecipe";
     }
+    
+    /**
+     * On a GET request to /addingredients, the MakeCoffeeController will return
+     * /src/main/resources/templates/addingredients.html.
+     *
+     * @param model
+     *            underlying UI model
+     * @return contents of the page
+     */
+    @GetMapping ( { "/addingredients", "/addingredients.html" } )
+    public String addingredientsForm ( final Model model ) {
+        return "addingredients";
+    }
 
 }
