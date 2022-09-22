@@ -1,7 +1,5 @@
 package edu.ncsu.csc.CoffeeMaker.models;
 
-import java.io.Serializable;
-
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -16,15 +14,11 @@ public class Ingredient extends DomainObject {
     @Id
     @GeneratedValue
     private Long           id;
+
     @Enumerated ( EnumType.STRING )
     private IngredientType ingredient;
-    private Integer        amount;
 
-    @Override
-    public Serializable getId () {
-        // TODO Auto-generated method stub
-        return null;
-    }
+    private Integer        amount;
 
     public Ingredient ( final IngredientType ingredient, final Integer amount ) {
         super();
@@ -54,6 +48,11 @@ public class Ingredient extends DomainObject {
 
     public void setId ( final Long id ) {
         this.id = id;
+    }
+
+    @Override
+    public Long getId () {
+        return id;
     }
 
     @Override
