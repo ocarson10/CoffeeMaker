@@ -3,13 +3,20 @@ package edu.ncsu.csc.CoffeeMaker.models;
 import java.io.Serializable;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
 import edu.ncsu.csc.CoffeeMaker.models.enums.IngredientType;
 
 @Entity
 public class Ingredient extends DomainObject {
 
+    @Id
+    @GeneratedValue
     private Long           id;
+    @Enumerated ( EnumType.STRING )
     private IngredientType ingredient;
     private Integer        amount;
 
