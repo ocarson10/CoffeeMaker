@@ -1,8 +1,14 @@
 package edu.ncsu.csc.CoffeeMaker.models;
 
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.Min;
 
 /**
@@ -18,20 +24,25 @@ public class Recipe extends DomainObject {
     /** Recipe id */
     @Id
     @GeneratedValue
-    private Long    id;
+    private Long                   id;
 
     /** Recipe name */
-    private String  name;
+    private String                 name;
 
     /** Recipe price */
     @Min ( 0 )
-    private Integer price;
+    private Integer                price;
+
+    /** List of new ingredients */
+    @OneToMany ( cascade = CascadeType.ALL, fetch = FetchType.EAGER )
+    private final List<Ingredient> ingredients;
 
     /**
      * Creates a default recipe for the coffee maker.
      */
     public Recipe () {
         this.name = "";
+        ingredients = new LinkedList<Ingredient>();
     }
 
     /**
@@ -94,13 +105,35 @@ public class Recipe extends DomainObject {
     }
 
     /**
-     * Returns the name of the recipe.
+     * Adds an ingredient
+     *
+     * @param ing
+     *            ingredient to add
+     *
+     */
+    public void addIngredient ( final Ingredient ing ) {
+        ingredients.add( ing );
+    }
+
+    /**
+     * Gets ingredient list
+     *
+     *
+     * @return ingredient list
+     *
+     */
+    public List<Ingredient> getIngredients () {
+        return ingredients;
+    }
+
+    /**
+     * Returns the name of the recipe and the ingredients.
      *
      * @return String
      */
     @Override
     public String toString () {
-        return name;
+        return name + " " + ingredients.toString();
     }
 
     @Override
