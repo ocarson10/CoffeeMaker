@@ -19,18 +19,10 @@ public class Inventory extends DomainObject {
     @Id
     @GeneratedValue
     private Long    id;
-    /** amount of coffee */
+    /** amount of ingredient */
     @Min ( 0 )
-    private Integer coffee;
-    /** amount of milk */
-    @Min ( 0 )
-    private Integer milk;
-    /** amount of sugar */
-    @Min ( 0 )
-    private Integer sugar;
-    /** amount of chocolate */
-    @Min ( 0 )
-    private Integer chocolate;
+    private Integer ingredient;
+   
 
     /**
      * Empty constructor for Hibernate
@@ -43,20 +35,11 @@ public class Inventory extends DomainObject {
     /**
      * Use this to create inventory with specified amts.
      *
-     * @param coffee
-     *            amt of coffee
-     * @param milk
-     *            amt of milk
-     * @param sugar
-     *            amt of sugar
-     * @param chocolate
-     *            amt of chocolate
+     * @param ingredient
+     *            amt of ingredient
      */
-    public Inventory ( final Integer coffee, final Integer milk, final Integer sugar, final Integer chocolate ) {
-        setCoffee( coffee );
-        setMilk( milk );
-        setSugar( sugar );
-        setChocolate( chocolate );
+    public Inventory ( final Integer ingredient ) {
+        setIngredient(ingredient); 
     }
 
     /**
@@ -84,103 +67,50 @@ public class Inventory extends DomainObject {
      *
      * @return amount of chocolate
      */
-    public Integer getChocolate () {
-        return chocolate;
+    public Integer getIngredient () {
+        return ingredient;
     }
 
     /**
-     * Sets the number of chocolate units in the inventory to the specified
+     * Sets the number of ingredient units in the inventory to the specified
      * amount.
      *
-     * @param amtChocolate
-     *            amount of chocolate to set
+     * @param amtIngredient
+     *     amount of ingredient to set
      */
-    public void setChocolate ( final Integer amtChocolate ) {
-        if ( amtChocolate >= 0 ) {
-            chocolate = amtChocolate;
+    public void setIngredient ( Integer amtIngredient ) {
+        if ( amtIngredient >= 0 ) {
+            ingredient = amtIngredient;
         }
     }
 
+
     /**
-     * Add the number of chocolate units in the inventory to the current amount
-     * of chocolate units.
+     * Add the number of ingredient units in the inventory to the current amount of
+     * ingredient units.
      *
-     * @param chocolate
-     *            amount of chocolate
-     * @return checked amount of chocolate
+     * @param amtIngredient
+     *            amount of ingredient
+     * @return checked amount of ingredient
      * @throws IllegalArgumentException
      *             if the parameter isn't a positive integer
      */
-    public Integer checkChocolate ( final String chocolate ) throws IllegalArgumentException {
-        Integer amtChocolate = 0;
+    public Integer checkIngredientAmount ( final String amtIngredient ) throws IllegalArgumentException {
+        Integer ingredientAmt = 0;
         try {
-            amtChocolate = Integer.parseInt( chocolate );
+        	ingredientAmt = Integer.parseInt( amtIngredient );
         }
         catch ( final NumberFormatException e ) {
-            throw new IllegalArgumentException( "Units of chocolate must be a positive integer" );
+            throw new IllegalArgumentException( "Units of ingredient must be a positive integer" );
         }
-        if ( amtChocolate < 0 ) {
-            throw new IllegalArgumentException( "Units of chocolate must be a positive integer" );
+        if ( ingredientAmt < 0 ) {
+            throw new IllegalArgumentException( "Units of ingredient must be a positive integer" );
         }
 
-        return amtChocolate;
+        return ingredientAmt;
     }
 
-    /**
-     * Returns the current number of coffee units in the inventory.
-     *
-     * @return amount of coffee
-     */
-    public Integer getCoffee () {
-        return coffee;
-    }
-
-    /**
-     * Sets the number of coffee units in the inventory to the specified amount.
-     *
-     * @param amtCoffee
-     *            amount of coffee to set
-     */
-    public void setCoffee ( final Integer amtCoffee ) {
-        if ( amtCoffee >= 0 ) {
-            coffee = amtCoffee;
-        }
-    }
-
-    /**
-     * Add the number of coffee units in the inventory to the current amount of
-     * coffee units.
-     *
-     * @param coffee
-     *            amount of coffee
-     * @return checked amount of coffee
-     * @throws IllegalArgumentException
-     *             if the parameter isn't a positive integer
-     */
-    public Integer checkCoffee ( final String coffee ) throws IllegalArgumentException {
-        Integer amtCoffee = 0;
-        try {
-            amtCoffee = Integer.parseInt( coffee );
-        }
-        catch ( final NumberFormatException e ) {
-            throw new IllegalArgumentException( "Units of coffee must be a positive integer" );
-        }
-        if ( amtCoffee < 0 ) {
-            throw new IllegalArgumentException( "Units of coffee must be a positive integer" );
-        }
-
-        return amtCoffee;
-    }
-
-    /**
-     * Returns the current number of milk units in the inventory.
-     *
-     * @return int
-     */
-    public Integer getMilk () {
-        return milk;
-    }
-
+ 
     /**
      * Sets the number of milk units in the inventory to the specified amount.
      *

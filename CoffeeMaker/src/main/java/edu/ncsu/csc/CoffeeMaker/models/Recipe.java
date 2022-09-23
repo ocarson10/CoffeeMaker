@@ -112,7 +112,9 @@ public class Recipe extends DomainObject {
      *
      */
     public void addIngredient ( final Ingredient ing ) {
+    	if(ing != null) {
         ingredients.add( ing );
+    	}
     }
 
     /**
