@@ -30,7 +30,7 @@ public class Ingredient extends DomainObject {
     /**
      * Ingredient's name
      */
-    private String  ingredient;
+    private String name;
 
     /**
      * Constructor method that will initiate the amount of ingredient
@@ -43,7 +43,7 @@ public class Ingredient extends DomainObject {
     public Ingredient ( final String name, final Integer amount ) {
         super();
         setAmount( amount );
-        setIngredient(name);
+        setName(name);
     }
 
     /**
@@ -58,18 +58,18 @@ public class Ingredient extends DomainObject {
      *
      * @return names of Ingredient
      */
-    public String getIngredient () {
-        return ingredient;
+    public String getName() {
+        return name;
     }
 
     /**
      * sets name of ingredient
      *
-     * @param ingredient
+     * @param name
      *            name to be set
      */
-    public void setIngredient ( final String ingredient ) {
-        this.ingredient = ingredient;    	
+    public void setName ( final String name ) {
+        this.name = name;    	
     }
 
     /**
@@ -137,7 +137,7 @@ public class Ingredient extends DomainObject {
 
     @Override
     public String toString () {
-        return "Ingredient [id=" + id + ", ingredient=" + ingredient + ", amount=" + amount + "]";
+        return "Ingredient [id=" + id + ", ingredient=" + name + ", amount=" + amount + "]";
     }
 
 }

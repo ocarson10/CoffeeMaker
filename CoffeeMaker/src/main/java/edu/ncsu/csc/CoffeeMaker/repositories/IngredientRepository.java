@@ -4,6 +4,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import edu.ncsu.csc.CoffeeMaker.models.Ingredient;
 
+/**
+ * IngredientRepository is used to provide CRUD operations for the Ingredient model.
+ * Spring will generate appropriate code with JPA.
+ *
+ * @author Kai Presler-Marshall
+ *
+ */
 public interface IngredientRepository extends JpaRepository<Ingredient, Long> {
 
     /**
@@ -11,7 +18,7 @@ public interface IngredientRepository extends JpaRepository<Ingredient, Long> {
      * to make this happen.
      * 
      * @param name
-     *            Name of the recipe
+     *            Name of the ingredient
      * @return Found Ingredient, null if none.
      */
     Ingredient findByName ( String name );

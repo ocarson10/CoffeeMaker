@@ -106,5 +106,19 @@ public class MappingController {
     public String addCustomRecipePage ( final Model model ) {
         return "customrecipe";
     }
+    
+    /**
+     * On a GET request to /ingredient, the APIIngredientController will return
+     * /src/main/resources/templates/ingredient.html.
+     *
+     * @param model
+     *            underlying UI model
+     * @return contents of the page
+     */
+    @GetMapping ( { "/ingredient", "/ingredient.html" } )
+    public String addIngredientPage ( final Model model ) {
+        return "ingredient";
+    }
+
 
 }

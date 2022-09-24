@@ -42,9 +42,9 @@ public class IngredientTest {
 
         assertEquals( 1, service.count() );
         Assertions.assertEquals( 100, i1.getAmount() );
-        Assertions.assertEquals( "Matcha", i1.getIngredient() );
+        Assertions.assertEquals( "Matcha", i1.getName() );
         final Long id1 = i1.getId();
-        Assertions.assertEquals( i1.getIngredient(), service.findById( id1 ).getIngredient() );
+        Assertions.assertEquals( i1.getName(), service.findById( id1 ).getName() );
 
     }
 

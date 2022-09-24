@@ -29,20 +29,21 @@ import edu.ncsu.csc.CoffeeMaker.services.IngredientService;
 @SuppressWarnings ( { "unchecked", "rawtypes" } )
 @RestController
 public class APIIngredientController extends APIController {
-	 /**
-     * InventoryService object, to be autowired in by Spring to allow for
-     * manipulating the Inventory model
+
+    /**
+     * IngredientService object, to be autowired in by Spring to allow for
+     * manipulating the Ingredient model
      */
     @Autowired
     private IngredientService service;
-    
+
     /**
      * REST API method to provide GET access to all ingredients in the system
      *
      * @return JSON representation of all ingredients
      */
-    @GetMapping ( BASE_PATH + "/ingredients" )
-    public List<Ingredient> getIngredients () {
+    @GetMapping ( BASE_PATH + "/ingredient" )
+    public List<Ingredient> getIngredients() {
         return service.findAll();
     }
 
@@ -51,48 +52,36 @@ public class APIIngredientController extends APIController {
      * by the path variable provided (the name of the ingredient desired)
      *
      * @param name
-     *            recipe name
+     *            ingredient name
      * @return response to the request
      */
-    @GetMapping ( BASE_PATH + "ingredients/{name}" )
-    public ResponseEntity getIngredient ( @PathVariable final String name ) {
-
-        final Ingredient ingr = service.findByName( name );
-
-        if ( null == ingr ) {
-            return new ResponseEntity( HttpStatus.NOT_FOUND );
-        }
-
-        return new ResponseEntity( ingr, HttpStatus.OK );
+    @GetMapping ( BASE_PATH + "/ingredient/{name}" )
+    public ResponseEntity getIngredient ( @PathVariable ( "name" ) final String name ) {
+        final Ingredient ingredient = service.findByName( name );
+        return null == ingredient
+                ? new ResponseEntity( errorResponse( "No ingredient found with name " + name ), HttpStatus.NOT_FOUND )
+                : new ResponseEntity( ingredient, HttpStatus.OK );
     }
-    
 
-  
     /**
      * REST API method to provide POST access to the ingredient model. This is used
      * to create a new ingredient by automatically converting the JSON RequestBody
      * provided to a ingredient object. Invalid JSON will fail.
      *
      * @param ingredient
-     *            The valid Recipe to be saved.
+     *            The valid ingredient to be saved.
      * @return ResponseEntity indicating success if the ingredient could be saved to
      *         the inventory, or an error if it could not be
      */
-    @PostMapping ( BASE_PATH + "/ingredients" )
+    @PostMapping ( BASE_PATH + "/ingredient" )
     public ResponseEntity createIngredient ( @RequestBody final Ingredient ingredient ) {
-        if ( null != service.findByName( ingredient.getIngredient() ) ) {
-            return new ResponseEntity( errorResponse( "Ingredient with the name " + ingredient.getIngredient() + " already exists" ),
+        if ( null != service.findByName( ingredient.getName() ) ) {
+            return new ResponseEntity( errorResponse( "Ingredient with the name " + ingredient.getName() + " already exists" ),
                     HttpStatus.CONFLICT );
         }
-        if ( service.findAll().size() < 3 ) {
-            service.save( ingredient );
-            return new ResponseEntity( successResponse( ingredient.getIngredient() + " successfully created" ), HttpStatus.OK );
-        }
-        else {
-            return new ResponseEntity(
-                    errorResponse( "Insufficient space in Ingredient book for ingredient " + ingredient.getIngredient() ),
-                    HttpStatus.INSUFFICIENT_STORAGE );
-        }
+        service.save( ingredient );
+        return new ResponseEntity( successResponse( ingredient.getName() + " successfully created" ), HttpStatus.OK );
+       
 
     }
 
@@ -103,10 +92,10 @@ public class APIIngredientController extends APIController {
      *
      * @param name
      *            The name of the ingredient to delete
-     * @return Success if the ingredient could be deleted; an error if the ingredient
+     * @return Success if the ingredient could be deleted; an error if the recipe
      *         does not exist
      */
-    @DeleteMapping ( BASE_PATH + "/ingredients/{name}" )
+    @DeleteMapping ( BASE_PATH + "/ingredient/{name}" )
     public ResponseEntity deleteIngredient ( @PathVariable final String name ) {
         final Ingredient ingredient = service.findByName( name );
         if ( null == ingredient ) {
