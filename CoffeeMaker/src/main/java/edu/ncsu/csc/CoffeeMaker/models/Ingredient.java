@@ -1,43 +1,46 @@
 package edu.ncsu.csc.CoffeeMaker.models;
 
 import javax.persistence.Entity;
-
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 /**
- * This class will handle and maintain Ingredients to be added to any Recipes 
+ * This class will handle and maintain Ingredients to be added to any Recipes
+ *
  * @author csriniv, orcarson, and tttruon5
  *
  */
 @Entity
 public class Ingredient extends DomainObject {
 
-	/** id of type long*/
+    /** id of type long */
     @Id
     @GeneratedValue
-    private Long id;
+    private Long    id;
 
     /**
      * amount of type Integer
      */
     private Integer amount;
-    
+
     /**
      * Ingredient's name
      */
-    private String ingredient;
+    private String  ingredient;
 
     /**
-     * Constructor method that will initiate the amount of ingredient 
-     * @param name of ingredient to be added
-     * @param amount of type Integer
+     * Constructor method that will initiate the amount of ingredient
+     *
+     * @param name
+     *            of ingredient to be added
+     * @param amount
+     *            of type Integer
      */
-    public Ingredient (  String name,  Integer amount ) {
-        super();
-    	setAmount(amount);
+    public Ingredient ( final String name, final Integer amount ) {
+        // super();
+        setAmount( amount );
         this.ingredient = name;
-       
+
     }
 
     /**
@@ -49,6 +52,7 @@ public class Ingredient extends DomainObject {
 
     /**
      * Retrieves name of ingredient
+     *
      * @return names of Ingredient
      */
     public String getIngredient () {
@@ -57,17 +61,17 @@ public class Ingredient extends DomainObject {
 
     /**
      * sets name of ingredient
-     * @param ingredient name to be set
+     *
+     * @param ingredient
+     *            name to be set
      */
-    public void setIngredient ( String ingredient ) {
+    public void setIngredient ( final String ingredient ) {
         this.ingredient = ingredient;
     }
-    
-   
-    	
-       
+
     /**
      * returns the amount of the ingredient
+     *
      * @return amount of ingredient
      */
     public Integer getAmount () {
@@ -76,21 +80,23 @@ public class Ingredient extends DomainObject {
 
     /**
      * Sets the amount of the ingredient
-     * @param amount of ingredient
+     *
+     * @param amount
+     *            of ingredient
      */
     public void setAmount ( final Integer amount ) {
-    	 if ( amount >= 0 ) {
-    		 this.amount = amount;
-         }
+        if ( amount >= 0 ) {
+            this.amount = amount;
+        }
     }
 
-    /**
-     * Sets id of the ingredient
-     * @param id of ingredient
-     */
-    public void setId ( final Long id ) {
-        this.id = id;
-    }
+    // /**
+    // * Sets id of the ingredient
+    // * @param id of ingredient
+    // */
+    // public void setId ( final Long id ) {
+    // this.id = id;
+    // }
 
     @Override
     public Long getId () {

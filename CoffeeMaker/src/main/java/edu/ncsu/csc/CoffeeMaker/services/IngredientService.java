@@ -16,7 +16,7 @@ public class IngredientService extends Service<Ingredient, Long> {
     private IngredientRepository ingredientRepository;
 
     @Override
-    protected JpaRepository getRepository () {
+    protected JpaRepository<Ingredient, Long> getRepository () {
         // TODO Auto-generated method stub
         return ingredientRepository;
     }
