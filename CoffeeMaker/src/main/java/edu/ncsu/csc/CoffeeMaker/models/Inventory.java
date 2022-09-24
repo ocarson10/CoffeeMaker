@@ -85,114 +85,30 @@ public class Inventory extends DomainObject {
     }
 
 
-    /**
-     * Add the number of ingredient units in the inventory to the current amount of
-     * ingredient units.
-     *
-     * @param amtIngredient
-     *            amount of ingredient
-     * @return checked amount of ingredient
-     * @throws IllegalArgumentException
-     *             if the parameter isn't a positive integer
-     */
-    public Integer checkIngredientAmount ( final String amtIngredient ) throws IllegalArgumentException {
-        Integer ingredientAmt = 0;
-        try {
-        	ingredientAmt = Integer.parseInt( amtIngredient );
-        }
-        catch ( final NumberFormatException e ) {
-            throw new IllegalArgumentException( "Units of ingredient must be a positive integer" );
-        }
-        if ( ingredientAmt < 0 ) {
-            throw new IllegalArgumentException( "Units of ingredient must be a positive integer" );
-        }
-
-        return ingredientAmt;
-    }
-
- 
-    /**
-     * Sets the number of milk units in the inventory to the specified amount.
-     *
-     * @param amtMilk
-     *            amount of milk to set
-     */
-    public void setMilk ( final Integer amtMilk ) {
-        if ( amtMilk >= 0 ) {
-            milk = amtMilk;
-        }
-    }
-
-    /**
-     * Add the number of milk units in the inventory to the current amount of
-     * milk units.
-     *
-     * @param milk
-     *            amount of milk
-     * @return checked amount of milk
-     * @throws IllegalArgumentException
-     *             if the parameter isn't a positive integer
-     */
-    public Integer checkMilk ( final String milk ) throws IllegalArgumentException {
-        Integer amtMilk = 0;
-        try {
-            amtMilk = Integer.parseInt( milk );
-        }
-        catch ( final NumberFormatException e ) {
-            throw new IllegalArgumentException( "Units of milk must be a positive integer" );
-        }
-        if ( amtMilk < 0 ) {
-            throw new IllegalArgumentException( "Units of milk must be a positive integer" );
-        }
-
-        return amtMilk;
-    }
-
-    /**
-     * Returns the current number of sugar units in the inventory.
-     *
-     * @return int
-     */
-    public Integer getSugar () {
-        return sugar;
-    }
-
-    /**
-     * Sets the number of sugar units in the inventory to the specified amount.
-     *
-     * @param amtSugar
-     *            amount of sugar to set
-     */
-    public void setSugar ( final Integer amtSugar ) {
-        if ( amtSugar >= 0 ) {
-            sugar = amtSugar;
-        }
-    }
-
-    /**
-     * Add the number of sugar units in the inventory to the current amount of
-     * sugar units.
-     *
-     * @param sugar
-     *            amount of sugar
-     * @return checked amount of sugar
-     * @throws IllegalArgumentException
-     *             if the parameter isn't a positive integer
-     */
-    public Integer checkSugar ( final String sugar ) throws IllegalArgumentException {
-        Integer amtSugar = 0;
-        try {
-            amtSugar = Integer.parseInt( sugar );
-        }
-        catch ( final NumberFormatException e ) {
-            throw new IllegalArgumentException( "Units of sugar must be a positive integer" );
-        }
-        if ( amtSugar < 0 ) {
-            throw new IllegalArgumentException( "Units of sugar must be a positive integer" );
-        }
-
-        return amtSugar;
-    }
+//    /**
+//     * Add the number of ingredient units in the inventory to the current amount of
+//     * ingredient units.
+//     *
+//     * @param amtIngredient
+//     *            amount of ingredient
+//     * @return checked amount of ingredient
+//     * @throws IllegalArgumentException
+//     *             if the parameter isn't a positive integer
+//     */
+//    public Integer checkIngredientAmount ( final String amtIngredient ) throws IllegalArgumentException {
+//        Integer ingredientAmt = 0;
+//        try {
+//        	ingredientAmt = Integer.parseInt( amtIngredient );
+//        }
+//        catch ( final NumberFormatException e ) {
+//            throw new IllegalArgumentException( "Units of ingredient must be a positive integer" );
+//        }
+//        if ( ingredientAmt < 0 ) {
+//            throw new IllegalArgumentException( "Units of ingredient must be a positive integer" );
+//        }
+//
+//        return ingredientAmt;
+//    }
 
     /**
      * Returns true if there are enough ingredients to make the beverage.
@@ -228,10 +144,7 @@ public class Inventory extends DomainObject {
      */
     public boolean useIngredients ( final Recipe r ) {
         if ( enoughIngredients( r ) ) {
-            setCoffee( coffee - r.getCoffee() );
-            setMilk( milk - r.getMilk() );
-            setSugar( sugar - r.getSugar() );
-            setChocolate( chocolate - r.getChocolate() );
+//        	setIngredient(ingredient - r.get)
             return true;
         }
         else {
@@ -242,27 +155,15 @@ public class Inventory extends DomainObject {
     /**
      * Adds ingredients to the inventory
      *
-     * @param coffee
-     *            amt of coffee
-     * @param milk
-     *            amt of milk
-     * @param sugar
-     *            amt of sugar
-     * @param chocolate
-     *            amt of chocolate
+     * @param ingredient - amount of ingredient
      * @return true if successful, false if not
      */
-    public boolean addIngredients ( final Integer coffee, final Integer milk, final Integer sugar,
-            final Integer chocolate ) {
-        if ( coffee < 0 || milk < 0 || sugar < 0 || chocolate < 0 ) {
+    public boolean addIngredients ( final Integer ingredient) {
+        if ( ingredient < 0 ) {
             throw new IllegalArgumentException( "Amount cannot be negative" );
         }
 
-        setCoffee( this.coffee + coffee );
-        setMilk( this.milk + milk );
-        setSugar( this.sugar + sugar );
-        setChocolate( this.chocolate + chocolate );
-
+        setIngredient(this.ingredient + ingredient); 
         return true;
     }
 
@@ -274,17 +175,8 @@ public class Inventory extends DomainObject {
     @Override
     public String toString () {
         final StringBuffer buf = new StringBuffer();
-        buf.append( "Coffee: " );
-        buf.append( getCoffee() );
-        buf.append( "\n" );
-        buf.append( "Milk: " );
-        buf.append( getMilk() );
-        buf.append( "\n" );
-        buf.append( "Sugar: " );
-        buf.append( getSugar() );
-        buf.append( "\n" );
-        buf.append( "Chocolate: " );
-        buf.append( getChocolate() );
+        buf.append( "Ingredient: " );
+        buf.append( getIngredient() );
         buf.append( "\n" );
         return buf.toString();
     }

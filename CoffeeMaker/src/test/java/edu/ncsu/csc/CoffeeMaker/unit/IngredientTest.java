@@ -52,24 +52,32 @@ public class IngredientTest {
     @Transactional
     public void testNoIngredients () {
         Assertions.assertEquals( 0, service.findAll().size(), "There should be no Ingredients in the CoffeeMaker" );
-        final Ingredient i1 = new Ingredient();
-        i1.setAmount( 200 );
-        i1.setIngredient( "Cream" );
+        final Ingredient i1 = new Ingredient("Cream", -200);
+//        i1.setAmount( -200 );
+//        i1.setIngredient( "Cream" );
 
-        final Ingredient i2 = new Ingredient();
-        i2.setAmount( -350 );
-        i2.setIngredient( "Sugar" );
+//        final Ingredient i2 = new Ingredient("Sugar", 350);
+//        i2.setAmount( 350 );
+//        i2.setIngredient( "Sugar" );
 
-        final List<Ingredient> ingredients = List.of( i1, i2 );
+//        final List<Ingredient> ingredients = List.of( i1, i2 );
 
-        try {
-            service.saveAll( ingredients );
-            Assertions.assertEquals( 0, service.count(),
+        try { 
+//              service.saveAll( ingredients );
+        	service.save(i1);
+              
+//              System.out.println("Ingredients saved are: " + service.);
+              Assertions.assertEquals( 0, service.count(),
                     "Trying to save a collection of elements where one is invalid should result in neither getting saved" );
         }
         catch ( final Exception e ) {
-            Assertions.assertTrue( e instanceof ConstraintViolationException );
+//            Assertions.assertTrue( e instanceof ConstraintViolationException );
+            Assertions.assertTrue( e instanceof IllegalArgumentException );
+            assertEquals("Units of ingredient must be a positive integer", e.getMessage());
         }
+        
+        Assertions.assertEquals( 0, service.findAll().size(), "There should be no Ingredients in the CoffeeMaker" );
+
     }
 
 }

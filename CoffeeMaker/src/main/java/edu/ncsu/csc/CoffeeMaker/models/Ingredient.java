@@ -3,6 +3,9 @@ package edu.ncsu.csc.CoffeeMaker.models;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.validation.constraints.Min;
+
+import org.hibernate.exception.ConstraintViolationException;
 
 /**
  * This class will handle and maintain Ingredients to be added to any Recipes
@@ -21,6 +24,7 @@ public class Ingredient extends DomainObject {
     /**
      * amount of type Integer
      */
+    @Min (0)
     private Integer amount;
 
     /**
@@ -37,10 +41,9 @@ public class Ingredient extends DomainObject {
      *            of type Integer
      */
     public Ingredient ( final String name, final Integer amount ) {
-        // super();
+        super();
         setAmount( amount );
-        this.ingredient = name;
-
+        setIngredient(name);
     }
 
     /**
@@ -66,7 +69,7 @@ public class Ingredient extends DomainObject {
      *            name to be set
      */
     public void setIngredient ( final String ingredient ) {
-        this.ingredient = ingredient;
+        this.ingredient = ingredient;    	
     }
 
     /**
@@ -87,17 +90,46 @@ public class Ingredient extends DomainObject {
     public void setAmount ( final Integer amount ) {
         if ( amount >= 0 ) {
             this.amount = amount;
-        }
+        } 
     }
 
-    // /**
-    // * Sets id of the ingredient
-    // * @param id of ingredient
-    // */
-    // public void setId ( final Long id ) {
-    // this.id = id;
-    // }
+    
+    /**
+     * Add the number of ingredient units in the inventory to the current amount of
+     * ingredient units.
+     *
+     * @param amtIngredient
+     *            amount of ingredient
+     * @return checked amount of ingredient
+     * @throws IllegalArgumentException
+     *             if the parameter isn't a positive integer
+     */
+    public Integer checkIngredientAmount ( final String amtIngredient ) throws IllegalArgumentException {
+        Integer ingredientAmt = 0;
+        try {
+        	ingredientAmt = Integer.parseInt( amtIngredient );
+        }
+        catch ( final NumberFormatException e ) {
+            throw new IllegalArgumentException( "Units of ingredient must be a positive integer" );
+        }
+        if ( ingredientAmt < 0 ) {
+            throw new IllegalArgumentException( "Units of ingredient must be a positive integer" );
+        }
 
+        return ingredientAmt;
+    }
+    
+    /**
+     * Set the ID of the Recipe (Used by Hibernate)
+     *
+     * @param id
+     *            the ID
+     */
+    @SuppressWarnings ( "unused" )
+    private void setId ( final Long id ) {
+        this.id = id;
+    }
+    
     @Override
     public Long getId () {
         return id;
