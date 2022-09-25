@@ -1,5 +1,7 @@
 package edu.ncsu.csc.CoffeeMaker.models;
 
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -19,10 +21,8 @@ public class Inventory extends DomainObject {
     @Id
     @GeneratedValue
     private Long    id;
-    /** amount of ingredient */
-    @Min ( 0 )
-    private Integer ingredient;
-   
+  
+    private List<Ingredient> ingredientsList;
 
     /**
      * Empty constructor for Hibernate
@@ -67,10 +67,27 @@ public class Inventory extends DomainObject {
      *
      * @return amount of chocolate
      */
-    public Integer getIngredient () {
-        return ingredient;
+    public Integer getIngredient (String name) {
+    	Integer index =findIngredientByName(name);
+    	Ingredient ing = null;
+    	if(index >= 0) {
+    		 ing = ingredientsList.get(index);
+        	if(ing != null) {
+        		return ing.getAmount();
+        	}
+    	}
+    	
+       return null; 
     }
 
+    private Integer findIngredientByName(String name) {
+    	for(int i = 0 ; i < ingredientsList.size(); i++) {
+    		if(ingredientsList.get(i).getName().equals(name) && name != null){
+    			return i;
+    		}
+    	}
+    	return -1;
+    }
     /**
      * Sets the number of ingredient units in the inventory to the specified
      * amount.
@@ -78,37 +95,41 @@ public class Inventory extends DomainObject {
      * @param amtIngredient
      *     amount of ingredient to set
      */
-    public void setIngredient ( Integer amtIngredient ) {
-        if ( amtIngredient >= 0 ) {
-            ingredient = amtIngredient;
-        }
+    public void setIngredient ( String name, Integer amtIngredient ) {
+    	Integer index = findIngredientByName(name);
+    	if(index != null) {
+    		 if ( amtIngredient >= 0 ) {
+    	           ingredientsList.get(index).setAmount(amtIngredient);
+    		 }
+    	}
+       
     }
 
 
-//    /**
-//     * Add the number of ingredient units in the inventory to the current amount of
-//     * ingredient units.
-//     *
-//     * @param amtIngredient
-//     *            amount of ingredient
-//     * @return checked amount of ingredient
-//     * @throws IllegalArgumentException
-//     *             if the parameter isn't a positive integer
-//     */
-//    public Integer checkIngredientAmount ( final String amtIngredient ) throws IllegalArgumentException {
-//        Integer ingredientAmt = 0;
-//        try {
-//        	ingredientAmt = Integer.parseInt( amtIngredient );
-//        }
-//        catch ( final NumberFormatException e ) {
-//            throw new IllegalArgumentException( "Units of ingredient must be a positive integer" );
-//        }
-//        if ( ingredientAmt < 0 ) {
-//            throw new IllegalArgumentException( "Units of ingredient must be a positive integer" );
-//        }
-//
-//        return ingredientAmt;
-//    }
+    /**
+     * Add the number of ingredient units in the inventory to the current amount of
+     * ingredient units.
+     *
+     * @param amtIngredient
+     *            amount of ingredient
+     * @return checked amount of ingredient
+     * @throws IllegalArgumentException
+     *             if the parameter isn't a positive integer
+     */
+    public Integer checkIngredientAmount (final String amtIngredient ) throws IllegalArgumentException {
+        Integer ingredientAmt = 0;
+        try {
+        	ingredientAmt = Integer.parseInt( amtIngredient );
+        }
+        catch ( final NumberFormatException e ) {
+            throw new IllegalArgumentException( "Units of ingredient must be a positive integer" );
+        }
+        if ( ingredientAmt < 0 ) {
+            throw new IllegalArgumentException( "Units of ingredient must be a positive integer" );
+        }
+
+        return ingredientAmt;
+    }
 
     /**
      * Returns true if there are enough ingredients to make the beverage.
@@ -119,18 +140,17 @@ public class Inventory extends DomainObject {
      */
     public boolean enoughIngredients ( final Recipe r ) {
         boolean isEnough = true;
-        if ( coffee < r.getCoffee() ) {
-            isEnough = false;
+        for(int i = 0; i < r.getIngredients().size(); i++ ) {
+        	Ingredient ing = r.getIngredients().get(i);
+        	for( Ingredient in : ingredientsList) {
+        		if(in.getName().equals(ing.getName())) {
+        			if(in.getAmount() < ing.getAmount()) {
+        				isEnough = false;
+        			} 
+        		}
+        	}
         }
-        if ( milk < r.getMilk() ) {
-            isEnough = false;
-        }
-        if ( sugar < r.getSugar() ) {
-            isEnough = false;
-        }
-        if ( chocolate < r.getChocolate() ) {
-            isEnough = false;
-        }
+        
         return isEnough;
     }
 
@@ -145,6 +165,14 @@ public class Inventory extends DomainObject {
     public boolean useIngredients ( final Recipe r ) {
         if ( enoughIngredients( r ) ) {
 //        	setIngredient(ingredient - r.get)
+        	for(int i = 0; i < r.getIngredients().size(); i++) {
+        		Ingredient ing = r.getIngredients().get(i);
+        		for(Ingredient in : ingredientsList) {
+        			if(in.getName().equals(ing.getName())) {
+        				
+        			}
+        		}
+        	}
             return true;
         }
         else {
@@ -158,12 +186,13 @@ public class Inventory extends DomainObject {
      * @param ingredient - amount of ingredient
      * @return true if successful, false if not
      */
-    public boolean addIngredients ( final Integer ingredient) {
-        if ( ingredient < 0 ) {
-            throw new IllegalArgumentException( "Amount cannot be negative" );
-        }
-
-        setIngredient(this.ingredient + ingredient); 
+    public boolean addIngredients (final String name, final Integer amount) {
+    	if(amount < 0) {
+    		throw new IllegalArgumentException("Amount cannot be negative");
+    	}
+        Integer index = findIngredientByName(name);
+        Integer amountAdd = ingredientsList.get(index).getAmount();
+        setIngredient(name, amountAdd + amount);
         return true;
     }
 
@@ -175,9 +204,11 @@ public class Inventory extends DomainObject {
     @Override
     public String toString () {
         final StringBuffer buf = new StringBuffer();
-        buf.append( "Ingredient: " );
-        buf.append( getIngredient() );
+        for(Ingredient i : ingredientsList) {
+        buf.append(i.getName() + ": " );
+        buf.append(i.getAmount() );
         buf.append( "\n" );
+        }
         return buf.toString();
     }
 
