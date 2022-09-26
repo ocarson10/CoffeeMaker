@@ -68,4 +68,21 @@ public class IngredientTest {
         assertNull( i1 );
     }
 
+    @Test
+    @Transactional
+    public void testDuplicateIngredients () {
+//        final Ingredient i1 = new Ingredient( "Matcha", 100 );
+//        final Ingredient i2 = new Ingredient( "Matcha", 100 );
+//
+//        service.save( i1 );
+//        service.save( i2 );
+//
+//        
+//        assertEquals( 1, service.count() );
+//        Assertions.assertEquals( 100, i1.getAmount() );
+//        Assertions.assertEquals( "Matcha", i1.getName() );
+//        final Long id1 = i1.getId();
+//        Assertions.assertEquals( i1.getName(), service.findById( id1 ).getName() );
+
+    }
 }

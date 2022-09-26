@@ -1,5 +1,7 @@
 package edu.ncsu.csc.CoffeeMaker.models;
 
+import java.util.Objects;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -40,7 +42,7 @@ public class Ingredient extends DomainObject {
      */
     public Ingredient ( final String name, final Integer amount ) {
         super();
-        if ( amount >= 0 ) {
+        if ( amount >= 0  ) {
             setAmount( amount );
             setName( name );
    
@@ -144,4 +146,10 @@ public class Ingredient extends DomainObject {
         return "Ingredient [id=" + id + ", ingredient=" + name + ", amount=" + amount + "]";
     }
 
+	
+
+	
+    
+    
+    
 }
