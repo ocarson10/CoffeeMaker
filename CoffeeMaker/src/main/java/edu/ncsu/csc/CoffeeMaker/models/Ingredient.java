@@ -5,8 +5,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.validation.constraints.Min;
 
-import org.hibernate.exception.ConstraintViolationException;
-
 /**
  * This class will handle and maintain Ingredients to be added to any Recipes
  *
@@ -24,13 +22,13 @@ public class Ingredient extends DomainObject {
     /**
      * amount of type Integer
      */
-    @Min (0)
+    @Min ( 0 )
     private Integer amount;
 
     /**
      * Ingredient's name
      */
-    private String name;
+    private String  name;
 
     /**
      * Constructor method that will initiate the amount of ingredient
@@ -42,8 +40,14 @@ public class Ingredient extends DomainObject {
      */
     public Ingredient ( final String name, final Integer amount ) {
         super();
-        setAmount( amount );
-        setName(name);
+        if ( amount >= 0 ) {
+            setAmount( amount );
+            setName( name );
+        }
+        else {
+            throw new IllegalArgumentException( "Units of ingredient must be a positive integer" );
+        }
+
     }
 
     /**
@@ -58,7 +62,7 @@ public class Ingredient extends DomainObject {
      *
      * @return names of Ingredient
      */
-    public String getName() {
+    public String getName () {
         return name;
     }
 
@@ -69,7 +73,7 @@ public class Ingredient extends DomainObject {
      *            name to be set
      */
     public void setName ( final String name ) {
-        this.name = name;    	
+        this.name = name;
     }
 
     /**
@@ -88,15 +92,14 @@ public class Ingredient extends DomainObject {
      *            of ingredient
      */
     public void setAmount ( final Integer amount ) {
-        if ( amount >= 0 ) {
-            this.amount = amount;
-        } 
+
+        this.amount = amount;
+
     }
 
-    
     /**
-     * Add the number of ingredient units in the inventory to the current amount of
-     * ingredient units.
+     * Add the number of ingredient units in the inventory to the current amount
+     * of ingredient units.
      *
      * @param amtIngredient
      *            amount of ingredient
@@ -107,7 +110,7 @@ public class Ingredient extends DomainObject {
     public Integer checkIngredientAmount ( final String amtIngredient ) throws IllegalArgumentException {
         Integer ingredientAmt = 0;
         try {
-        	ingredientAmt = Integer.parseInt( amtIngredient );
+            ingredientAmt = Integer.parseInt( amtIngredient );
         }
         catch ( final NumberFormatException e ) {
             throw new IllegalArgumentException( "Units of ingredient must be a positive integer" );
@@ -118,7 +121,7 @@ public class Ingredient extends DomainObject {
 
         return ingredientAmt;
     }
-    
+
     /**
      * Set the ID of the Recipe (Used by Hibernate)
      *
@@ -129,7 +132,7 @@ public class Ingredient extends DomainObject {
     private void setId ( final Long id ) {
         this.id = id;
     }
-    
+
     @Override
     public Long getId () {
         return id;

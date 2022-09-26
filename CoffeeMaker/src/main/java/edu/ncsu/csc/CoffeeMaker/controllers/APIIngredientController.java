@@ -43,13 +43,14 @@ public class APIIngredientController extends APIController {
      * @return JSON representation of all ingredients
      */
     @GetMapping ( BASE_PATH + "/ingredient" )
-    public List<Ingredient> getIngredients() {
+    public List<Ingredient> getIngredients () {
         return service.findAll();
     }
 
     /**
-     * REST API method to provide GET access to a specific ingredient, as indicated
-     * by the path variable provided (the name of the ingredient desired)
+     * REST API method to provide GET access to a specific ingredient, as
+     * indicated by the path variable provided (the name of the ingredient
+     * desired)
      *
      * @param name
      *            ingredient name
@@ -64,24 +65,24 @@ public class APIIngredientController extends APIController {
     }
 
     /**
-     * REST API method to provide POST access to the ingredient model. This is used
-     * to create a new ingredient by automatically converting the JSON RequestBody
-     * provided to a ingredient object. Invalid JSON will fail.
+     * REST API method to provide POST access to the ingredient model. This is
+     * used to create a new ingredient by automatically converting the JSON
+     * RequestBody provided to a ingredient object. Invalid JSON will fail.
      *
      * @param ingredient
      *            The valid ingredient to be saved.
-     * @return ResponseEntity indicating success if the ingredient could be saved to
-     *         the inventory, or an error if it could not be
+     * @return ResponseEntity indicating success if the ingredient could be
+     *         saved to the inventory, or an error if it could not be
      */
     @PostMapping ( BASE_PATH + "/ingredient" )
     public ResponseEntity createIngredient ( @RequestBody final Ingredient ingredient ) {
         if ( null != service.findByName( ingredient.getName() ) ) {
-            return new ResponseEntity( errorResponse( "Ingredient with the name " + ingredient.getName() + " already exists" ),
+            return new ResponseEntity(
+                    errorResponse( "Ingredient with the name " + ingredient.getName() + " already exists" ),
                     HttpStatus.CONFLICT );
         }
         service.save( ingredient );
         return new ResponseEntity( successResponse( ingredient.getName() + " successfully created" ), HttpStatus.OK );
-       
 
     }
 
@@ -92,8 +93,8 @@ public class APIIngredientController extends APIController {
      *
      * @param name
      *            The name of the ingredient to delete
-     * @return Success if the ingredient could be deleted; an error if the recipe
-     *         does not exist
+     * @return Success if the ingredient could be deleted; an error if the
+     *         recipe does not exist
      */
     @DeleteMapping ( BASE_PATH + "/ingredient/{name}" )
     public ResponseEntity deleteIngredient ( @PathVariable final String name ) {

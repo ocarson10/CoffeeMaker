@@ -1,11 +1,9 @@
 package edu.ncsu.csc.CoffeeMaker.unit;
 
 import static org.junit.Assert.assertEquals;
-
-import java.util.List;
+import static org.junit.Assert.assertNull;
 
 import javax.transaction.Transactional;
-import javax.validation.ConstraintViolationException;
 
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
@@ -49,35 +47,24 @@ public class IngredientTest {
     }
 
     @Test
-    @Transactional
-    public void testNoIngredients () {
+    // @Transactional
+    public void testInvalidIngredients () {
         Assertions.assertEquals( 0, service.findAll().size(), "There should be no Ingredients in the CoffeeMaker" );
-        final Ingredient i1 = new Ingredient("Cream", -200);
-//        i1.setAmount( -200 );
-//        i1.setIngredient( "Cream" );
+        Ingredient i1 = null;
+        try {
 
-//        final Ingredient i2 = new Ingredient("Sugar", 350);
-//        i2.setAmount( 350 );
-//        i2.setIngredient( "Sugar" );
+            i1 = new Ingredient( "Cream", -200 );
 
-//        final List<Ingredient> ingredients = List.of( i1, i2 );
-
-        try { 
-//              service.saveAll( ingredients );
-        	service.save(i1);
-              
-//              System.out.println("Ingredients saved are: " + service.);
-              Assertions.assertEquals( 0, service.count(),
-                    "Trying to save a collection of elements where one is invalid should result in neither getting saved" );
         }
         catch ( final Exception e ) {
-//            Assertions.assertTrue( e instanceof ConstraintViolationException );
+            // Assertions.assertTrue( e instanceof ConstraintViolationException
+            // );
             Assertions.assertTrue( e instanceof IllegalArgumentException );
-            assertEquals("Units of ingredient must be a positive integer", e.getMessage());
+            assertEquals( "Units of ingredient must be a positive integer", e.getMessage() );
         }
-        
-        Assertions.assertEquals( 0, service.findAll().size(), "There should be no Ingredients in the CoffeeMaker" );
 
+        Assertions.assertEquals( 0, service.findAll().size(), "There should be no Ingredients in the CoffeeMaker" );
+        assertNull( i1 );
     }
 
 }

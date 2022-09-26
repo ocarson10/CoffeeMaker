@@ -48,7 +48,7 @@ public class InventoryService extends Service<Inventory, Long> {
         }
         else {
             // initialize the inventory with 0 of everything
-            final Inventory i = new Inventory( 0, 0, 0, 0 );
+            final Inventory i = new Inventory( null );
             save( i );
             return i;
         }
