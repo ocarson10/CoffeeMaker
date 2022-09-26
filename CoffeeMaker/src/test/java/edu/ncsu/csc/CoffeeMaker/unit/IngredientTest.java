@@ -3,6 +3,8 @@ package edu.ncsu.csc.CoffeeMaker.unit;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import java.util.LinkedList;
+
 import javax.transaction.Transactional;
 
 import org.junit.Test;
@@ -47,6 +49,9 @@ public class IngredientTest {
     public void testCreateIngredient () {
         final Ingredient i1 = new Ingredient( "Matcha", 100 );
         service.save( i1 );
+        final LinkedList<Ingredient> ingredients = new LinkedList<Ingredient>();
+        ingredients.add(i1);
+        assertEquals(100, (int)ingredients.get(0).checkIngredientAmount("100"));
 
         assertEquals( 1, service.count() );
         Assertions.assertEquals( 100, i1.getAmount() );
