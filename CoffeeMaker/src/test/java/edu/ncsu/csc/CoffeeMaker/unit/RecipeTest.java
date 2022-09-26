@@ -1,9 +1,11 @@
 package edu.ncsu.csc.CoffeeMaker.unit;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.validation.ConstraintViolationException;
 
+import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,13 +15,10 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
-import org.junit.Assert;
-import org.junit.Before;
 
 import edu.ncsu.csc.CoffeeMaker.TestConfig;
 import edu.ncsu.csc.CoffeeMaker.models.Ingredient;
 import edu.ncsu.csc.CoffeeMaker.models.Recipe;
-import edu.ncsu.csc.CoffeeMaker.models.enums.IngredientType;
 import edu.ncsu.csc.CoffeeMaker.services.RecipeService;
 
 @ExtendWith ( SpringExtension.class )
@@ -29,65 +28,62 @@ public class RecipeTest {
 
     @Autowired
     private RecipeService service;
-    
-
 
     @BeforeEach
     public void setup () {
-    	service.deleteAll();
+        service.deleteAll();
 
+    }
+
+    private Recipe createRecipe ( final String name, final Integer price, final List<Ingredient> list ) {
+        final Recipe recipe = new Recipe();
+        recipe.setName( name );
+        recipe.setPrice( price );
+
+        for ( int i = 0; i <= list.size() - 1; i++ ) {
+            recipe.addIngredient( list.get( i ) );
+        }
+
+        return recipe;
     }
 
     @Test
     @Transactional
-    public void createRecipe () {
-        Recipe r1 = new Recipe();
+    public void testcreateRecipe () {
+        final LinkedList<Ingredient> ingredients = new LinkedList<Ingredient>();
+        final Ingredient i1 = new Ingredient( "Matcha", 100 );
+        final Ingredient i2 = new Ingredient( "Milk", 100 );
+        ingredients.add( i1 );
+        ingredients.add( i2 );
 
-        r1.setName( "Delicious Coffee" );
-
-        r1.setPrice( 50 );
-
-        r1.addIngredient( new Ingredient( IngredientType.COFFEE, 10 ) );
-        r1.addIngredient( new Ingredient( IngredientType.PUMPKIN_SPICE, 3 ) );
-        r1.addIngredient( new Ingredient( IngredientType.MILK, 2 ) );
+        final String name = "Coffee";
+        final Recipe r1 = createRecipe( name, 50, ingredients );
 
         service.save( r1 );
 
     }
-    
+
     @Test
     @Transactional
     public void testAddRecipe () {
 
-        final Recipe r1 = new Recipe();
-        r1.setName( "Black Coffee" );
-        
-        r1.setPrice( 1 );
-        final Ingredient coffee = new Ingredient(IngredientType.COFFEE, 1); 
-        r1.addIngredient(coffee);
-        
-        final Ingredient milk = new Ingredient(IngredientType.MILK, 0); 
-        r1.addIngredient(milk);
-        
-        final Ingredient cream = new Ingredient(IngredientType.CREAM, 0); 
-        r1.addIngredient(cream);
-        service.save( r1 );
+        final LinkedList<Ingredient> ingredients = new LinkedList<Ingredient>();
+        final Ingredient i1 = new Ingredient( "Matcha", 100 );
+        final Ingredient i2 = new Ingredient( "Milk", 100 );
+        ingredients.add( i1 );
+        ingredients.add( i2 );
 
-        final Recipe r2 = new Recipe();
-        r2.setName( "Matcha" );
-        r2.setPrice( 1 );
-        final Ingredient matcha = new Ingredient(IngredientType.MATCHA, 2); 
-        
-        r2.addIngredient(matcha);
-        coffee.setAmount(2);
-        r2.addIngredient(coffee);
-        
-        milk.setAmount(4);
-        r2.addIngredient(milk);
+        final String name = "Coffee";
+        final Recipe r1 = createRecipe( name, 50, ingredients );
 
-        cream.setAmount(3);
-        r2.addIngredient(cream);
-        
+        final LinkedList<Ingredient> ingredients2 = new LinkedList<Ingredient>();
+        final Ingredient i3 = new Ingredient( "Mocha", 100 );
+        final Ingredient i4 = new Ingredient( "Milk", 100 );
+        ingredients2.add( i3 );
+        ingredients2.add( i4 );
+        final String name1 = "Mocha";
+        final Recipe r2 = createRecipe( name1, 50, ingredients2 );
+
         service.save( r1 );
         service.save( r2 );
 
@@ -103,21 +99,43 @@ public class RecipeTest {
     public void testNoRecipes () {
         Assertions.assertEquals( 0, service.findAll().size(), "There should be no Recipes in the CoffeeMaker" );
 
-        final Recipe r1 = new Recipe();
-        r1.setName( "Tasty Drink" );
-        r1.setPrice( 12 );
-        r1.addIngredient( new Ingredient( IngredientType.COFFEE, -10 ) );
-        r1.addIngredient( new Ingredient( IngredientType.PUMPKIN_SPICE, 0) );
-        r1.addIngredient( new Ingredient( IngredientType.MILK, 0 ) );
-        service.save(r1); 
-        
-        final Recipe r2 = new Recipe();
-        r2.setName( "Matcha" );
-        r2.setPrice( 1 );
-        r2.addIngredient( new Ingredient( IngredientType.COFFEE, -2) );
-        r2.addIngredient( new Ingredient( IngredientType.MILK, 0 ) );
-        r2.addIngredient( new Ingredient( IngredientType.MATCHA, 0 ) );
-        service.save(r2); 
+        final String name1 = "Tasty Drink";
+        final LinkedList<Ingredient> ingredients = new LinkedList<Ingredient>();
+        final Recipe r1 = createRecipe( name1, -50, ingredients );
+        final Ingredient i1 = new Ingredient( "Matcha", 100 );
+        final Ingredient i2 = new Ingredient( "Milk", 100 );
+        ingredients.add( i1 );
+        ingredients.add( i2 );
+
+        try {
+            service.save( r1 );
+
+            Assertions.assertNull( service.findByName( name1 ),
+                    "A recipe was able to be created with a negative price" );
+
+        }
+        catch ( final ConstraintViolationException cvee ) {
+            // expected
+        }
+
+        final String name = "Mocha";
+        final LinkedList<Ingredient> ingredients2 = new LinkedList<Ingredient>();
+        final Recipe r2 = createRecipe( name, -50, ingredients2 );
+
+        final Ingredient i3 = new Ingredient( "Mocha", 100 );
+        final Ingredient i4 = new Ingredient( "Milk", 100 );
+        ingredients2.add( i3 );
+        ingredients2.add( i4 );
+
+        try {
+            service.save( r2 );
+
+            Assertions.assertNull( service.findByName( name ),
+                    "A recipe was able to be created with a negative price" );
+        }
+        catch ( final ConstraintViolationException cvee ) {
+            // expected
+        }
 
         final List<Recipe> recipes = List.of( r1, r2 );
 
@@ -132,29 +150,64 @@ public class RecipeTest {
 
     }
 
-
     @Test
     @Transactional
     public void testDeleteRecipe1 () {
         Assertions.assertEquals( 0, service.findAll().size(), "There should be no Recipes in the CoffeeMaker" );
-        Recipe r1 = new Recipe();
+        final String name = "Mocha";
+        final LinkedList<Ingredient> ingredients2 = new LinkedList<Ingredient>();
+        final Recipe r2 = createRecipe( name, 50, ingredients2 );
 
-        r1.setName( "Delicious Coffee" );
-
-        r1.setPrice( 50 );
-
-        r1.addIngredient( new Ingredient( IngredientType.COFFEE, 10 ) );
-        r1.addIngredient( new Ingredient( IngredientType.PUMPKIN_SPICE, 3 ) );
-        r1.addIngredient( new Ingredient( IngredientType.MILK, 2 ) );
-
-        service.save( r1 );
-        
+        final Ingredient i3 = new Ingredient( "Mocha", 100 );
+        final Ingredient i4 = new Ingredient( "Milk", 100 );
+        ingredients2.add( i3 );
+        ingredients2.add( i4 );
+        service.save( r2 );
 
         Assertions.assertEquals( 1, service.count(), "There should be one recipe in the database" );
 
-        service.delete( r1 );
+        service.delete( r2 );
         Assertions.assertEquals( 0, service.findAll().size(), "There should be no Recipes in the CoffeeMaker" );
     }
-    
+
+    @Test
+    @Transactional
+    public void recipesNotEqual () {
+        Assertions.assertEquals( 0, service.findAll().size(), "There should be no Recipes in the CoffeeMaker" );
+        final LinkedList<Ingredient> ingredients = new LinkedList<Ingredient>();
+        final Ingredient i1 = new Ingredient( "Matcha", 100 );
+        final Ingredient i2 = new Ingredient( "Milk", 100 );
+        ingredients.add( i1 );
+        ingredients.add( i2 );
+
+        final String name = "Coffee";
+        final Recipe r1 = createRecipe( name, 50, ingredients );
+
+        final LinkedList<Ingredient> ingredients2 = new LinkedList<Ingredient>();
+        final Ingredient i3 = new Ingredient( "Mocha", 100 );
+        final Ingredient i4 = new Ingredient( "Milk", 100 );
+        ingredients2.add( i3 );
+        ingredients2.add( i4 );
+
+        final String name1 = "Mocha";
+        final Recipe r2 = createRecipe( name1, 50, ingredients2 );
+
+        final LinkedList<Ingredient> ingredients3 = new LinkedList<Ingredient>();
+        final Ingredient i5 = new Ingredient( "Mocha", 100 );
+        final Ingredient i6 = new Ingredient( "Milk", 100 );
+        ingredients3.add( i5 );
+        ingredients3.add( i6 );
+
+        final String name2 = "Mocha";
+        final Recipe r3 = createRecipe( name2, 50, ingredients3 );
+
+        service.save( r1 );
+        service.save( r2 );
+        service.save( r3 );
+
+        Assert.assertFalse( r1.equals( r2 ) );
+        Assert.assertFalse( r1.toString().equals( r3.toString() ) );
+        Assert.assertFalse( r1.hashCode() == r3.hashCode() );
+    }
 
 }
