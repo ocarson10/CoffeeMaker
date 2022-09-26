@@ -3,9 +3,12 @@ package edu.ncsu.csc.CoffeeMaker.unit;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.LinkedList;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -14,8 +17,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import edu.ncsu.csc.CoffeeMaker.TestConfig;
+import edu.ncsu.csc.CoffeeMaker.models.Ingredient;
 import edu.ncsu.csc.CoffeeMaker.models.Inventory;
 import edu.ncsu.csc.CoffeeMaker.models.Recipe;
+import edu.ncsu.csc.CoffeeMaker.services.IngredientService;
 import edu.ncsu.csc.CoffeeMaker.services.InventoryService;
 
 @RunWith ( SpringRunner.class )
@@ -25,17 +30,31 @@ public class InventoryTest {
 
     @Autowired
     private InventoryService inventoryService;
+    
 
-    @Before
+    @Autowired
+    private IngredientService ingredientService;
+    
+    LinkedList<Ingredient> ingredients;
+
+
+    @BeforeEach
     public void setup () {
-        final Inventory ivt = inventoryService.getInventory();
+    	final Inventory ivt = inventoryService.getInventory(); 
+    	ingredients = new LinkedList<Ingredient>();
+    	Ingredient i1 = new Ingredient("Matcha", 100);
+    	Ingredient i2 = new Ingredient("Milk", 100);
+    	
+    	ingredients.add(i1);
+    	ingredients.add(i2);
 
-        ivt.setChocolate( 500 );
-        ivt.setCoffee( 500 );
-        ivt.setMilk( 500 );
-        ivt.setSugar( 500 );
+    	ingredientService.saveAll(ingredients);
 
-        inventoryService.save( ivt );
+    	ivt.addNewIngredients(i1);
+    	ivt.addNewIngredients(i2);
+
+    	inventoryService.save(ivt);
+    	
     }
 
     @Test
@@ -45,11 +64,18 @@ public class InventoryTest {
 
         final Recipe recipe = new Recipe();
         recipe.setName( "Delicious Not-Coffee" );
-        recipe.setChocolate( 10 );
-        recipe.setMilk( 20 );
-        recipe.setSugar( 5 );
-        recipe.setCoffee( 1 );
+        Ingredient i1 = new Ingredient("Matcha", 100);
+    	Ingredient i2 = new Ingredient("Milk", 100);
+    	ingredientService.save(i1);
+    	ingredientService.save(i2);
+    	ingredients.add(i1);
+    	ingredients.add(i2);
+    
 
+
+        recipe.setIngredient("Matcha", 2);
+        recipe.setIngredient("Milk", 4);
+       
         recipe.setPrice( 5 );
 
         i.useIngredients( recipe );
@@ -57,33 +83,57 @@ public class InventoryTest {
         /*
          * Make sure that all of the inventory fields are now properly updated
          */
-
-        Assert.assertEquals( 490, (int) i.getChocolate() );
-        Assert.assertEquals( 480, (int) i.getMilk() );
-        Assert.assertEquals( 495, (int) i.getSugar() );
-        Assert.assertEquals( 499, (int) i.getCoffee() );
+        Assert.assertEquals( 98, (int) i.getIngredients().get(0).getAmount() );
+        Assert.assertEquals( 96, (int) i.getIngredients().get(1).getAmount() );
+       
     }
 
     @Test
     @Transactional
     public void testAddInventory1 () {
-        Inventory ivt = inventoryService.getInventory();
+    	inventoryService.deleteAll();
+    	ingredientService.deleteAll();
+        Inventory ivt = inventoryService.getInventory();        
+        
+        final LinkedList<Ingredient> ingredients = new LinkedList<Ingredient>();
 
-        ivt.addIngredients( 5, 3, 7, 2 );
+        final Ingredient i1 = new Ingredient( "Matcha", 100 );
+        final Ingredient i2 = new Ingredient( "Coffee", 100 );
+        final Ingredient i3 = new Ingredient( "Milk", 100 );
+        final Ingredient i4 = new Ingredient( "Sugar", 100 );
+        
+        ingredients.add( i1 );
+        ingredients.add( i2 );
+        ingredients.add( i3 );
+        ingredients.add( i4 );
+        ingredientService.saveAll(ingredients);
+        ivt.addNewIngredients(ingredients);
+
+        ivt.addIngredients("Matcha", 100);      
+        ivt.addIngredients("Coffee", 100);
+        ivt.addIngredients("Milk", 100);
+        ivt.addIngredients("Sugar", 100);
+        
+        ingredients.add( i1 );
+        ingredients.add( i2 );
+        ingredients.add( i3 );
+        ingredients.add( i4 );
+        ingredientService.saveAll(ingredients);
+        ivt.addNewIngredients(ingredients);
 
         /* Save and retrieve again to update with DB */
         inventoryService.save( ivt );
 
         ivt = inventoryService.getInventory();
 
-        Assert.assertEquals( "Adding to the inventory should result in correctly-updated values for coffee", 505,
-                (int) ivt.getCoffee() );
-        Assert.assertEquals( "Adding to the inventory should result in correctly-updated values for milk", 503,
-                (int) ivt.getMilk() );
-        Assert.assertEquals( "Adding to the inventory should result in correctly-updated values sugar", 507,
-                (int) ivt.getSugar() );
-        Assert.assertEquals( "Adding to the inventory should result in correctly-updated values chocolate", 502,
-                (int) ivt.getChocolate() );
+        Assert.assertEquals( "Adding to the inventory should result in correctly-updated values for matcha", 200,
+                (int) ivt.getIngredients().get(0).getAmount() );
+        Assert.assertEquals( "Adding to the inventory should result in correctly-updated values for coffee", 200,
+                (int)  ivt.getIngredients().get(1).getAmount() );
+        Assert.assertEquals( "Adding to the inventory should result in correctly-updated values milk", 200,
+                (int)  ivt.getIngredients().get(2).getAmount() );
+        Assert.assertEquals( "Adding to the inventory should result in correctly-updated values sugar", 200,
+                (int)  ivt.getIngredients().get(3).getAmount() );
 
     }
 

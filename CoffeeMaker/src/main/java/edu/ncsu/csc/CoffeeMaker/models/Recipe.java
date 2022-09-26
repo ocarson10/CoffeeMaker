@@ -116,6 +116,31 @@ public class Recipe extends DomainObject {
         ingredients.add( ing );
     	}
     }
+    
+
+    private Integer findIngredientByName ( final String name ) {
+        for ( int i = 0; i < ingredients.size(); i++ ) {
+            if ( ingredients.get( i ).getName().equals( name ) && name != null ) {
+                return i;
+            }
+        }
+        return -1;
+    }
+    
+    /**
+     * Sets  ingredient amount
+     *
+     * @param name
+     *            name of ingredient to be set
+     * @param amount 
+     * 			 amount of ingredient to be set for recipe             
+     *
+     */
+    public void setIngredient (String name, Integer amount ) {
+    	int index = findIngredientByName(name); 
+    	ingredients.get(index).setAmount(amount);
+    	
+    }
 
     /**
      * Gets ingredient list

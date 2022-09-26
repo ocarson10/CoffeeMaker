@@ -43,6 +43,7 @@ public class Ingredient extends DomainObject {
         if ( amount >= 0 ) {
             setAmount( amount );
             setName( name );
+   
         }
         else {
             throw new IllegalArgumentException( "Units of ingredient must be a positive integer" );

@@ -3,7 +3,9 @@ package edu.ncsu.csc.CoffeeMaker.models;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
@@ -23,7 +25,7 @@ public class Inventory extends DomainObject {
     @GeneratedValue
     private Long             id;
 
-    @OneToMany
+    @OneToMany ( cascade = CascadeType.ALL, fetch = FetchType.EAGER )
     private List<Ingredient> ingredientsList;
 
     /**
@@ -92,11 +94,18 @@ public class Inventory extends DomainObject {
     }
 
     private Integer findIngredientByName ( final String name ) {
-        for ( int i = 0; i < ingredientsList.size(); i++ ) {
-            if ( ingredientsList.get( i ).getName().equals( name ) && name != null ) {
-                return i;
-            }
-        }
+    	if(ingredientsList == null) {
+    		return -1; 
+    	} else {
+    		  for ( int i = 0; i < ingredientsList.size(); i++ ) {
+    	            if ( ingredientsList.get( i ).getName().equals( name ) && name != null ) {
+    	                return i;
+    	            }
+    	        }
+    	}
+    	
+      
+       
         return -1;
     }
 
@@ -108,12 +117,14 @@ public class Inventory extends DomainObject {
      *            amount of ingredient to set
      */
     public void setIngredient ( final String name, final Integer amtIngredient ) {
-        final Integer index = findIngredientByName( name );
-        if ( index != null ) {
+		final Integer index = findIngredientByName( name );
+
+        if ( index != -1 ) {
             if ( amtIngredient >= 0 ) {
                 ingredientsList.get( index ).setAmount( amtIngredient );
             }
         }
+       
 
     }
 
@@ -180,7 +191,7 @@ public class Inventory extends DomainObject {
                 final Ingredient ing = r.getIngredients().get( i );
                 for ( final Ingredient in : ingredientsList ) {
                     if ( in.getName().equals( ing.getName() ) ) {
-
+                    	in.setAmount(in.getAmount()-ing.getAmount());
                     }
                 }
             }
@@ -194,22 +205,41 @@ public class Inventory extends DomainObject {
     /**
      * Adds ingredients to the inventory
      *
+     * @param ingredientList list of ingredients
+     *            - amount of ingredient
+     * @return true if successful, false if not
+     */
+    public boolean addIngredients ( String name, Integer amount ) {    	
+    	
+        final int indedx = findIngredientByName( name);
+        if ( amount < 0 ) {
+            throw new IllegalArgumentException( "Amount cannot be negative" );
+        }
+        setIngredient( name, amount + ingredientsList.get( indedx ).getAmount() );
+        
+        return true;
+    }
+
+    
+    /**
+     * Adds ingredients to the inventory
+     *
      * @param ingredient
      *            - amount of ingredient
      * @return true if successful, false if not
      */
-    public boolean addIngredients ( final List<Ingredient> ingredientList ) {
-        for ( final Ingredient i : ingredientList ) {
-            if ( i.getAmount() < 0 ) {
-                throw new IllegalArgumentException( "Amount cannot be negative" );
-            }
-            final int indedx = findIngredientByName( i.getName() );
-            setIngredient( i.getName(), i.getAmount() + ingredientList.get( indedx ).getAmount() );
-        }
+    public boolean addNewIngredients ( Ingredient ing ) { //ing object 
+    	ingredientsList.add(ing); 
+//    	for ( final Ingredient i : ingredientsList ) {
+//            if ( i.getAmount() < 0 ) {
+//                throw new IllegalArgumentException( "Amount cannot be negative" );
+//            }
+//           ingredientsList.add(i);
+//        }
+//        
 
         return true;
     }
-
     /**
      * Returns a string describing the current contents of the inventory.
      *

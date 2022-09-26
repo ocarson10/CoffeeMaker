@@ -49,6 +49,7 @@ public class IngredientTest {
     @Test
     // @Transactional
     public void testInvalidIngredients () {
+ 
         Assertions.assertEquals( 0, service.findAll().size(), "There should be no Ingredients in the CoffeeMaker" );
         Ingredient i1 = null;
         try {
