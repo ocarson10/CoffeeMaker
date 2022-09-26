@@ -20,15 +20,20 @@ import edu.ncsu.csc.CoffeeMaker.TestConfig;
 import edu.ncsu.csc.CoffeeMaker.models.Ingredient;
 import edu.ncsu.csc.CoffeeMaker.models.Recipe;
 import edu.ncsu.csc.CoffeeMaker.services.RecipeService;
-
+/**
+ * Tests Recipe class and all its functionality
+ * @author csc326 staff
+ *
+ */
 @ExtendWith ( SpringExtension.class )
 @EnableAutoConfiguration
 @SpringBootTest ( classes = TestConfig.class )
 public class RecipeTest {
-
+	/** RecipeService for RecipeTest*/
     @Autowired
     private RecipeService service;
-
+    
+	/** Deletes everything before each test */
     @BeforeEach
     public void setup () {
         service.deleteAll();
@@ -47,6 +52,9 @@ public class RecipeTest {
         return recipe;
     }
 
+    /**
+     * Tests to see if recipe is created
+     */
     @Test
     @Transactional
     public void testcreateRecipe () {
@@ -63,6 +71,9 @@ public class RecipeTest {
 
     }
 
+    /**
+     * Tests to see if two recipes are created
+     */
     @Test
     @Transactional
     public void testAddRecipe () {
@@ -94,6 +105,9 @@ public class RecipeTest {
         Assertions.assertEquals( r1, recipes.get( 0 ), "The retrieved recipe should match the created one" );
     }
 
+    /**
+     * Tests if recipe is created with an invalid amount
+     */
     @Test
     @Transactional
     public void testNoRecipes () {
@@ -149,7 +163,10 @@ public class RecipeTest {
         }
 
     }
-
+    
+    /**
+     * Tests to see if recipe was deleted successfully
+     */
     @Test
     @Transactional
     public void testDeleteRecipe1 () {
@@ -170,6 +187,9 @@ public class RecipeTest {
         Assertions.assertEquals( 0, service.findAll().size(), "There should be no Recipes in the CoffeeMaker" );
     }
 
+    /**
+     * Tests for equals() and hashcode() methods as well as toString()
+     */
     @Test
     @Transactional
     public void recipesNotEqual () {

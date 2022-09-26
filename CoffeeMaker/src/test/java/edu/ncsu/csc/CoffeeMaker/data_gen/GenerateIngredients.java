@@ -13,15 +13,22 @@ import org.springframework.test.context.junit4.SpringRunner;
 import edu.ncsu.csc.CoffeeMaker.TestConfig;
 import edu.ncsu.csc.CoffeeMaker.models.Ingredient;
 import edu.ncsu.csc.CoffeeMaker.services.IngredientService;
-
+/**
+ * Tests GenerateIngredients class and its functionality
+ * @author csc326
+ *
+ */
 @RunWith ( SpringRunner.class )
 @EnableAutoConfiguration
 @SpringBootTest ( classes = TestConfig.class )
 public class GenerateIngredients {
-
+	/** IngredientService for GenerateIngredients*/
     @Autowired
     private IngredientService ingredientService;
 
+    /**
+     * Tests to make sure ingredients were created successfully
+     */
     @Test
     @Transactional
     public void testCreateIngredients () {

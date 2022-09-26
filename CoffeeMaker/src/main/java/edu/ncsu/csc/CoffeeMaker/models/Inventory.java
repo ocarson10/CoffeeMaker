@@ -25,6 +25,9 @@ public class Inventory extends DomainObject {
     @GeneratedValue
     private Long             id;
 
+    /**
+     * List of Ingredients in inventory that can map to other classes
+     */
     @OneToMany ( cascade = CascadeType.ALL, fetch = FetchType.EAGER )
     private List<Ingredient> ingredientsList;
 
@@ -40,7 +43,7 @@ public class Inventory extends DomainObject {
     /**
      * Use this to create inventory with specified amts.
      *
-     * @param ingredient
+     * @param ingredients list of ingredients that will contain the amount of each ingredient
      *            amt of ingredient
      */
     public Inventory ( final List<Ingredient> ingredients ) {
@@ -92,6 +95,7 @@ public class Inventory extends DomainObject {
 
     /**
      * Returns the current number of chocolate units in the inventory.
+     * @param name of ingredient
      *
      * @return amount of chocolate
      */
@@ -121,7 +125,7 @@ public class Inventory extends DomainObject {
     /**
      * Sets the number of ingredient units in the inventory to the specified
      * amount. INGREDIENT MUST EXISTING IN INGREDIENTSLIST ALREADY.
-     *
+     * @param name of ingredient
      * @param amtIngredient
      *            amount of ingredient to set
      */
@@ -140,7 +144,7 @@ public class Inventory extends DomainObject {
      * Sets the number of ingredient units in the inventory to the specified
      * amount. INGREDIENT MUST EXISTING IN INGREDIENTSLIST ALREADY. adds amount
      * onto preexisting amount.
-     *
+     * @param name of ingredient
      * @param amtIngredient
      *            amount of ingredient to set
      */
@@ -267,7 +271,7 @@ public class Inventory extends DomainObject {
     /**
      * Adds ingredients to the inventory
      *
-     * @param ingredientList
+     * @param ing Ingredient to be added to inventory
      *            list of ingredients - amount of ingredient
      * @return true if successful, false if not
      */

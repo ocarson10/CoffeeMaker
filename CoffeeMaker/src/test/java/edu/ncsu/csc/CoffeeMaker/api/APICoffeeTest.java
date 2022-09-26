@@ -24,21 +24,25 @@ import edu.ncsu.csc.CoffeeMaker.models.Recipe;
 import edu.ncsu.csc.CoffeeMaker.services.IngredientService;
 import edu.ncsu.csc.CoffeeMaker.services.InventoryService;
 import edu.ncsu.csc.CoffeeMaker.services.RecipeService;
-
+/**
+ * Tests the APICoffee class to ensure that all its methods are implemented correctly
+ * @author csc326 staff
+ *
+ */
 @ExtendWith ( SpringExtension.class )
 @SpringBootTest
 @AutoConfigureMockMvc
 public class APICoffeeTest {
-
+	/** mock model view controller for APICoffeeTest*/
     @Autowired
     private MockMvc           mvc;
-
+    /** RecipeService for APICoffeeTest*/
     @Autowired
     private RecipeService     recipeService;
-
+    /** InventoryService for APICoffeeTest*/
     @Autowired
     private InventoryService  iService;
-
+    /** IngredientService for APICoffeeTest*/
     @Autowired
     private IngredientService ingredientService;
 
@@ -68,6 +72,10 @@ public class APICoffeeTest {
 
     }
 
+    /**
+     * Tests if coffee was purchased successfully
+     * @throws Exception if an error occurs
+     */
     @Test
     @Transactional
     public void testPurchaseBeverage1 () throws Exception {
@@ -80,6 +88,10 @@ public class APICoffeeTest {
 
     }
 
+    /**
+     * Tests if there's not enough money to purchase coffee
+     * @throws Exception if an error occurs
+     */
     @Test
     @Transactional
     public void testPurchaseBeverage2 () throws Exception {
@@ -92,7 +104,11 @@ public class APICoffeeTest {
                 .andExpect( jsonPath( "$.message" ).value( "Not enough money paid" ) );
 
     }
-
+    
+    /**
+     * Tests if there's not enough ingredients in the inventory
+     * @throws Exception if an error occurs
+     */
     @Test
     @Transactional
     public void testPurchaseBeverage3 () throws Exception {

@@ -22,22 +22,28 @@ import edu.ncsu.csc.CoffeeMaker.models.Recipe;
 import edu.ncsu.csc.CoffeeMaker.services.IngredientService;
 import edu.ncsu.csc.CoffeeMaker.services.InventoryService;
 import edu.ncsu.csc.CoffeeMaker.services.RecipeService;
-
+/**
+ * Tests the Databases and their functionality
+ * @author csc326
+ *
+ */
 @RunWith ( SpringRunner.class )
 @EnableAutoConfiguration
 @SpringBootTest ( classes = TestConfig.class )
-
 public class TestDatabaseInteraction {
-
+	/** RecipeService to test for recipes*/
     @Autowired
     private RecipeService     recipeService;
-
+	/** InventoryService to test for inventory*/
     @Autowired
     private InventoryService  iService;
-
+	/** IngredientService to test for ingredients*/
     @Autowired
     private IngredientService ingredientService;
 
+    /**
+     * Tests adding and deleting recipes 
+     */
     @Test
     @Transactional
     public void testRecipes () {
@@ -216,7 +222,6 @@ public class TestDatabaseInteraction {
      * created to ensure that the existsById method from the Service abstract
      * class properly works.
      */
-
     @Test
     @Transactional
     public void testExistsById () {
@@ -323,7 +328,6 @@ public class TestDatabaseInteraction {
      * created to ensure that the findById method from the Service abstract
      * class properly works.
      */
-
     @Test
     @Transactional
     public void testFindById () {

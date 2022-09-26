@@ -7,10 +7,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.util.LinkedList;
-import java.util.List;
-
 import javax.transaction.Transactional;
 
 import org.junit.Assert;
@@ -28,10 +24,12 @@ import org.springframework.web.context.WebApplicationContext;
 
 import edu.ncsu.csc.CoffeeMaker.common.TestUtils;
 import edu.ncsu.csc.CoffeeMaker.models.Ingredient;
-import edu.ncsu.csc.CoffeeMaker.models.Recipe;
 import edu.ncsu.csc.CoffeeMaker.services.IngredientService;
-import edu.ncsu.csc.CoffeeMaker.services.RecipeService;
-
+/**
+ * Tests APIIngredient to ensure all its methods are implemented correctly
+ * @author csc326 staff
+ *
+ */
 @RunWith ( SpringRunner.class )
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -43,9 +41,10 @@ public class APIIngredientTest {
      */
     private MockMvc               mvc;
 
+    /** WebApplicationContext for APIIngredient*/
     @Autowired
     private WebApplicationContext context;
-
+    /** IngredientService for APIIngredient*/
     @Autowired
     private IngredientService         service;
 
@@ -58,6 +57,10 @@ public class APIIngredientTest {
 
     }
 
+    /**
+     * Tests to make sure the ingredient was created successfully
+     * @throws Exception if error occurs
+     */
     @Test
     @Transactional
     public void ensureIngredient () throws Exception {
@@ -70,7 +73,10 @@ public class APIIngredientTest {
 
     }
 
-
+    /**
+     * Tests if there's a duplicate ingredient
+     * @throws Exception if error occurs
+     */
     @Test
     @Transactional
     public void testDuplicateIngredient () throws Exception {
@@ -87,6 +93,10 @@ public class APIIngredientTest {
         Assert.assertEquals( "There should only one ingredient in the CoffeeMaker", 1, service.findAll().size() );
     }
     
+    /**
+     * Tests to make sure the ingredient was deleted successfully
+     * @throws Exception if error occurs
+     */
     @Test
     @Transactional
     public void testDeleteIngredient () throws Exception {
@@ -108,6 +118,10 @@ public class APIIngredientTest {
     }
 
     // Chitra Srinivasan (csriniv) milestone 1 individual test #2
+    /**
+     * Tests to make sure the ingredient was retrieved successfully
+     * @throws Exception if error occurs
+     */
     @Test
     @Transactional
     public void testGetIngredient1 () throws Exception {

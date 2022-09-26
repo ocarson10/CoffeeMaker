@@ -9,7 +9,7 @@ import com.google.gson.Gson;
  *
  */
 public class TestUtils {
-
+	/** gson to use for TestUtils*/
     private static Gson gson = new Gson();
 
     /**

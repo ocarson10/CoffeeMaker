@@ -17,21 +17,31 @@ import org.springframework.test.context.junit4.SpringRunner;
 import edu.ncsu.csc.CoffeeMaker.TestConfig;
 import edu.ncsu.csc.CoffeeMaker.models.Ingredient;
 import edu.ncsu.csc.CoffeeMaker.services.IngredientService;
-
+/**
+ * Tests IngredientClass and all its methods are working correctly
+ * @author csc326 staff
+ *
+ */
 @RunWith ( SpringRunner.class )
 @EnableAutoConfiguration
 @SpringBootTest ( classes = TestConfig.class )
 public class IngredientTest {
-
+	/** IngredientService for IngredientTest*/
     @Autowired
     private IngredientService service;
 
+    /**
+     * Clears everything in service before each test  
+     * */
     @BeforeEach
     public void setup () {
         service.deleteAll();
 
     }
 
+    /**
+     * Tests to see if it creates the ingredient successfully
+     */
     @Test
     @Transactional
     public void testCreateIngredient () {
@@ -46,6 +56,9 @@ public class IngredientTest {
 
     }
 
+    /**
+     * Tests to see if it attempts to create ingredient with invalid ingredient
+     */
     @Test
     @Transactional
     public void testInvalidIngredients () {
@@ -68,21 +81,5 @@ public class IngredientTest {
         assertNull( i1 );
     }
 
-    @Test
-    @Transactional
-    public void testDuplicateIngredients () {
-//        final Ingredient i1 = new Ingredient( "Matcha", 100 );
-//        final Ingredient i2 = new Ingredient( "Matcha", 100 );
-//
-//        service.save( i1 );
-//        service.save( i2 );
-//
-//        
-//        assertEquals( 1, service.count() );
-//        Assertions.assertEquals( 100, i1.getAmount() );
-//        Assertions.assertEquals( "Matcha", i1.getName() );
-//        final Long id1 = i1.getId();
-//        Assertions.assertEquals( i1.getName(), service.findById( id1 ).getName() );
 
-    }
 }

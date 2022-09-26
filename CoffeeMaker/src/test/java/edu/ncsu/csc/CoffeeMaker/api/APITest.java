@@ -29,7 +29,11 @@ import edu.ncsu.csc.CoffeeMaker.models.Ingredient;
 import edu.ncsu.csc.CoffeeMaker.models.Inventory;
 import edu.ncsu.csc.CoffeeMaker.models.Recipe;
 import edu.ncsu.csc.CoffeeMaker.services.InventoryService;
-
+/**
+ * Tests API class and its methods 
+ * @author csc326 staff
+ *
+ */
 @RunWith ( SpringRunner.class )
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -40,10 +44,10 @@ public class APITest {
      * API
      */
     private MockMvc               mvc;
-
+    /** webapplicationcontext for APItest*/
     @Autowired
     private WebApplicationContext context;
-
+    /** inventoryService for APItest*/
     @Autowired
     private InventoryService      iService;
 
@@ -67,6 +71,10 @@ public class APITest {
         return recipe;
     }
 
+    /**
+     * tests to make sure post, get, and delete API rest endpoints work correctly
+     * @throws Exception if error occurs
+     */
     @Test
     @Transactional
     public void testAPI () throws Exception {

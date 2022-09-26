@@ -27,7 +27,11 @@ import edu.ncsu.csc.CoffeeMaker.common.TestUtils;
 import edu.ncsu.csc.CoffeeMaker.models.Ingredient;
 import edu.ncsu.csc.CoffeeMaker.models.Recipe;
 import edu.ncsu.csc.CoffeeMaker.services.RecipeService;
-
+/**
+ * Tests APIRecipe and its methods to ensure that it was implemented correctly
+ * @author csc326 staff
+ *
+ */
 @RunWith ( SpringRunner.class )
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -38,10 +42,10 @@ public class APIRecipeTest {
      * API
      */
     private MockMvc               mvc;
-
+    /** WebApplicationContext for APIRecipe */
     @Autowired
     private WebApplicationContext context;
-
+    /** RecipeService for APIRecipe */
     @Autowired
     private RecipeService         service;
 
@@ -53,7 +57,11 @@ public class APIRecipeTest {
         mvc = MockMvcBuilders.webAppContextSetup( context ).build();
 
     }
-
+    
+	/**
+	 * Tests to make sure recipe was created successfully
+	 * @throws Exception if error occurs
+	 */
     @Test
     @Transactional
     public void ensureRecipe () throws Exception {
@@ -72,7 +80,11 @@ public class APIRecipeTest {
                 .content( TestUtils.asJsonString( r1 ) ) ).andExpect( status().isOk() );
 
     }
-
+    
+   	/**
+   	 * Tests to make sure recipe was created successfully
+   	 * @throws Exception if error occurs
+   	 */
     @Test
     @Transactional
     public void testRecipeAPI () throws Exception {
@@ -94,6 +106,11 @@ public class APIRecipeTest {
 
     }
 
+    
+   	/**
+   	 * Tests duplicate recipe 
+   	 * @throws Exception if error occurs
+   	 */
     @Test
     @Transactional
     public void testAddRecipe2 () throws Exception {
@@ -119,6 +136,11 @@ public class APIRecipeTest {
         Assert.assertEquals( "There should only one recipe in the CoffeeMaker", 1, service.findAll().size() );
     }
 
+    
+   	/**
+   	 * Tests to make only 3 recipes can be in the inventory at a time 
+   	 * @throws Exception if error occurs
+   	 */
     @Test
     @Transactional
     public void testAddRecipe15 () throws Exception {
@@ -180,6 +202,10 @@ public class APIRecipeTest {
     }
 
     // Chitra Srinivasan (csriniv) milestone 1 individual test #1
+   	/**
+   	 * Tests to make sure 3 recipes were created successfully
+   	 * @throws Exception if error occurs
+   	 */
     @Test
     @Transactional
     public void testGetInventory1 () throws Exception {
@@ -229,6 +255,10 @@ public class APIRecipeTest {
     }
 
     // Chitra Srinivasan (csriniv) milestone 1 individual test #2
+   	/**
+   	 * Tests to make sure recipe was retrieved successfully
+   	 * @throws Exception if error occurs
+   	 */
     @Test
     @Transactional
     public void testGetRecipe1 () throws Exception {

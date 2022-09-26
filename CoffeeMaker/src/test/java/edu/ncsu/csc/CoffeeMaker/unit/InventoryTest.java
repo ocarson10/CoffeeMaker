@@ -18,17 +18,22 @@ import edu.ncsu.csc.CoffeeMaker.services.IngredientService;
 import edu.ncsu.csc.CoffeeMaker.services.InventoryService;
 import edu.ncsu.csc.CoffeeMaker.services.RecipeService;
 
+/**
+ * Tests the Inventory Class and its functionality
+ * @author csc326
+ *
+ */
 @RunWith ( SpringRunner.class )
 @EnableAutoConfiguration
 @SpringBootTest ( classes = TestConfig.class )
 public class InventoryTest {
-
+	/** InventoryService for InventoryTest*/
     @Autowired
     private InventoryService  inventoryService;
-
+	/** IngredientService for InventoryTest*/
     @Autowired
     private IngredientService ingredientService;
-
+	/** RecipeService for InventoryTest*/
     @Autowired
     private RecipeService     recipeService;
 
@@ -36,11 +41,17 @@ public class InventoryTest {
     //
     // LinkedList<Ingredient> ingredients;
 
+    /**
+     * Deletes everything in service before each test 
+     */
     @BeforeEach
     public void setup () {
         inventoryService.deleteAll();
     }
 
+    /**
+     * Tests to make sure that the inventory is consumed after each recipe is created
+     */
     @Test
     @Transactional
     public void testConsumeInventory () {
@@ -71,6 +82,9 @@ public class InventoryTest {
 
     }
 
+    /**
+     * Tests to make sure that inventory adds new ingredients
+     */
     @Test
     @Transactional
     public void testAddInventory1 () {
@@ -94,6 +108,9 @@ public class InventoryTest {
 
     }
 
+    /**
+     * Tests to add an ingredient with invalid amount 
+     */
     @Test
     @Transactional
     public void testAddInventory2 () {
@@ -112,6 +129,9 @@ public class InventoryTest {
 
     }
 
+    /**
+     * Tests to add ingredient with invalid amount 
+     */
     @Test
     @Transactional
     public void testAddInventory3 () {
@@ -131,6 +151,9 @@ public class InventoryTest {
         Assert.assertTrue( ivt.getIngredientsByName( "Coffee" ).getAmount().equals( 220 ) );
     }
 
+    /**
+     * Tests to check for invalid ingredient amounts
+     */
     @Test
     @Transactional
     public void testCheckIngredientAmount () {
@@ -152,6 +175,9 @@ public class InventoryTest {
     }
 
     // Chitra Srinivasan (csriniv) milestone 1 individual test #3
+    /**
+     * Tests to make sure that ingredients have been added to recipe
+     */
     @Test
     @Transactional
     public void testEmptyInventory () {
@@ -175,7 +201,9 @@ public class InventoryTest {
         Assert.assertFalse( ivt.enoughIngredients( recipe ) );
 
     }
-
+    /**
+     * Tests to make sure that there's enough ingredients to make coffee
+     */
     @Test
     @Transactional
     public void testCheckIsEnoughIngredients () {
@@ -235,6 +263,9 @@ public class InventoryTest {
         Assert.assertFalse( ivt.enoughIngredients( recipe ) );
     }
 
+    /**
+     * Tests to make sure toString() works
+     */
     @Test
     @Transactional
     public void testToString () {
