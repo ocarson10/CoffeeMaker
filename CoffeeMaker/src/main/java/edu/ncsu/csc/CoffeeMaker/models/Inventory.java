@@ -34,6 +34,7 @@ public class Inventory extends DomainObject {
     public Inventory () {
         // Intentionally empty so that Hibernate can instantiate
         // Inventory object.
+        ingredientsList = new LinkedList<Ingredient>();
     }
 
     /**
@@ -83,48 +84,74 @@ public class Inventory extends DomainObject {
      * @return amount of chocolate
      */
     public List<Ingredient> getIngredients () {
-        final List<Ingredient> result = new LinkedList<Ingredient>();
         if ( ingredientsList.size() == 0 ) {
-            return result;
+            return null;
         }
-        for ( final Ingredient i : ingredientsList ) {
-            result.add( i );
+        return ingredientsList;
+    }
+
+    /**
+     * Returns the current number of chocolate units in the inventory.
+     *
+     * @return amount of chocolate
+     */
+    public Ingredient getIngredientsByName ( final String name ) {
+        if ( ingredientsList.size() == 0 || name == null ) {
+            return null;
         }
-        return result;
+        final int index = findIngredientByName( name );
+        return ingredientsList.get( index );
     }
 
     private Integer findIngredientByName ( final String name ) {
-    	if(ingredientsList == null) {
-    		return -1; 
-    	} else {
-    		  for ( int i = 0; i < ingredientsList.size(); i++ ) {
-    	            if ( ingredientsList.get( i ).getName().equals( name ) && name != null ) {
-    	                return i;
-    	            }
-    	        }
-    	}
-    	
-      
-       
+        if ( ingredientsList == null ) {
+            return -1;
+        }
+        else {
+            for ( int i = 0; i < ingredientsList.size(); i++ ) {
+                if ( ingredientsList.get( i ).getName().equals( name ) ) {
+                    return i;
+                }
+            }
+        }
+
         return -1;
     }
 
     /**
      * Sets the number of ingredient units in the inventory to the specified
-     * amount.
+     * amount. INGREDIENT MUST EXISTING IN INGREDIENTSLIST ALREADY.
      *
      * @param amtIngredient
      *            amount of ingredient to set
      */
     public void setIngredient ( final String name, final Integer amtIngredient ) {
-		final Integer index = findIngredientByName( name );
+        final Integer index = findIngredientByName( name );
 
         if ( index != -1 ) {
             if ( amtIngredient >= 0 ) {
                 ingredientsList.get( index ).setAmount( amtIngredient );
             }
         }
-       
+
+    }
+
+    /**
+     * Sets the number of ingredient units in the inventory to the specified
+     * amount. INGREDIENT MUST EXISTING IN INGREDIENTSLIST ALREADY. adds amount
+     * onto preexisting amount.
+     *
+     * @param amtIngredient
+     *            amount of ingredient to set
+     */
+    public void addIngredientAmount ( final String name, final Integer amtIngredient ) {
+        final Integer index = findIngredientByName( name );
+
+        if ( index != -1 ) {
+            if ( amtIngredient >= 0 ) {
+                ingredientsList.get( index ).setAmount( amtIngredient + ingredientsList.get( index ).getAmount() );
+            }
+        }
 
     }
 
@@ -162,17 +189,20 @@ public class Inventory extends DomainObject {
      */
     public boolean enoughIngredients ( final Recipe r ) {
         boolean isEnough = true;
-        for ( int i = 0; i < r.getIngredients().size(); i++ ) {
-            final Ingredient ing = r.getIngredients().get( i );
-            for ( final Ingredient in : ingredientsList ) {
-                if ( in.getName().equals( ing.getName() ) ) {
-                    if ( in.getAmount() < ing.getAmount() ) {
-                        isEnough = false;
+        if ( ingredientsList.size() < r.getIngredients().size() ) {
+            isEnough = false;
+        }
+        else {
+            for ( final Ingredient i : r.getIngredients() ) {
+                for ( final Ingredient in : ingredientsList ) {
+                    if ( in.getName().equals( i.getName() ) ) {
+                        if ( in.getAmount() < i.getAmount() ) {
+                            isEnough = false;
+                        }
                     }
                 }
             }
         }
-
         return isEnough;
     }
 
@@ -185,13 +215,12 @@ public class Inventory extends DomainObject {
      * @return true if recipe is made.
      */
     public boolean useIngredients ( final Recipe r ) {
+
         if ( enoughIngredients( r ) ) {
-            // setIngredient(ingredient - r.get)
-            for ( int i = 0; i < r.getIngredients().size(); i++ ) {
-                final Ingredient ing = r.getIngredients().get( i );
+            for ( final Ingredient i : r.getIngredients() ) {
                 for ( final Ingredient in : ingredientsList ) {
-                    if ( in.getName().equals( ing.getName() ) ) {
-                    	in.setAmount(in.getAmount()-ing.getAmount());
+                    if ( i.getName().equals( in.getName() ) ) {
+                        in.setAmount( in.getAmount() - i.getAmount() );
                     }
                 }
             }
@@ -202,44 +231,75 @@ public class Inventory extends DomainObject {
         }
     }
 
+    // /**
+    // * Adds ingredients to the inventory
+    // *
+    // * @param ingredientList
+    // * list of ingredients - amount of ingredient
+    // * @return true if successful, false if not
+    // */
+    // public boolean addIngredients ( final String name, final Integer amount )
+    // {
+    //
+    // if ( amount < 0 ) {
+    // throw new IllegalArgumentException( "Amount cannot be negative" );
+    // }
+    // if ( name != null ) {
+    // final Ingredient result = new Ingredient( name, amount );
+    //
+    // if ( ingredientsList.size() != 0 ) {
+    // for ( final Ingredient i : ingredientsList ) {
+    // if ( i.getName().equals( name ) && i.getAmount().equals( amount ) ) {
+    // return false;
+    // }
+    // }
+    // }
+    //
+    // ingredientsList.add( result );
+    // return true;
+    // }
+    // else {
+    // throw new IllegalArgumentException( "Please enter name of Ingredient" );
+    // }
+    //
+    // }
+    //
     /**
      * Adds ingredients to the inventory
      *
-     * @param ingredientList list of ingredients
-     *            - amount of ingredient
+     * @param ingredientList
+     *            list of ingredients - amount of ingredient
      * @return true if successful, false if not
      */
-    public boolean addIngredients ( String name, Integer amount ) {    	
-    	
-        final int indedx = findIngredientByName( name);
-        if ( amount < 0 ) {
-            throw new IllegalArgumentException( "Amount cannot be negative" );
+    public boolean addIngredient ( final Ingredient ing ) {
+
+        if ( ing != null && ing.getAmount() >= 0 ) {
+            ingredientsList.add( ing );
+            return true;
         }
-        setIngredient( name, amount + ingredientsList.get( indedx ).getAmount() );
-        
-        return true;
+        return false;
     }
 
-    
-    /**
-     * Adds ingredients to the inventory
-     *
-     * @param ingredient
-     *            - amount of ingredient
-     * @return true if successful, false if not
-     */
-    public boolean addNewIngredients ( Ingredient ing ) { //ing object 
-    	ingredientsList.add(ing); 
-//    	for ( final Ingredient i : ingredientsList ) {
-//            if ( i.getAmount() < 0 ) {
-//                throw new IllegalArgumentException( "Amount cannot be negative" );
-//            }
-//           ingredientsList.add(i);
-//        }
-//        
+    // /**
+    // * Adds ingredients to the inventory
+    // *
+    // * @param ingredient
+    // * - amount of ingredient
+    // * @return true if successful, false if not
+    // */
+    // public boolean addNewIngredients ( final Ingredient ing ) { // ing object
+    // ingredientsList.add( ing );
+    // // for ( final Ingredient i : ingredientsList ) {
+    // // if ( i.getAmount() < 0 ) {
+    // // throw new IllegalArgumentException( "Amount cannot be negative" );
+    // // }
+    // // ingredientsList.add(i);
+    // // }
+    // //
+    //
+    // return true;
+    // }
 
-        return true;
-    }
     /**
      * Returns a string describing the current contents of the inventory.
      *

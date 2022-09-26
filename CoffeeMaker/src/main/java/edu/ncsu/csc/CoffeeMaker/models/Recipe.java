@@ -112,11 +112,10 @@ public class Recipe extends DomainObject {
      *
      */
     public void addIngredient ( final Ingredient ing ) {
-    	if(ing != null && ing.getAmount() >= 0) {
-        ingredients.add( ing );
-    	}
+        if ( ing != null && ing.getAmount() >= 0 ) {
+            ingredients.add( ing );
+        }
     }
-    
 
     private Integer findIngredientByName ( final String name ) {
         for ( int i = 0; i < ingredients.size(); i++ ) {
@@ -126,20 +125,20 @@ public class Recipe extends DomainObject {
         }
         return -1;
     }
-    
+
     /**
-     * Sets  ingredient amount
+     * Sets ingredient amount
      *
      * @param name
      *            name of ingredient to be set
-     * @param amount 
-     * 			 amount of ingredient to be set for recipe             
+     * @param amount
+     *            amount of ingredient to be set for recipe
      *
      */
-    public void setIngredient (String name, Integer amount ) {
-    	int index = findIngredientByName(name); 
-    	ingredients.get(index).setAmount(amount);
-    	
+    public void setIngredient ( final String name, final Integer amount ) {
+        final int index = findIngredientByName( name );
+        ingredients.get( index ).setAmount( amount );
+
     }
 
     /**
