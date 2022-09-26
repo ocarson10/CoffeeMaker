@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import javax.transaction.Transactional;
 
+import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,8 +18,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import edu.ncsu.csc.CoffeeMaker.common.TestUtils;
+import edu.ncsu.csc.CoffeeMaker.models.Ingredient;
 import edu.ncsu.csc.CoffeeMaker.models.Inventory;
 import edu.ncsu.csc.CoffeeMaker.models.Recipe;
+import edu.ncsu.csc.CoffeeMaker.services.IngredientService;
 import edu.ncsu.csc.CoffeeMaker.services.InventoryService;
 import edu.ncsu.csc.CoffeeMaker.services.RecipeService;
 
@@ -28,13 +31,16 @@ import edu.ncsu.csc.CoffeeMaker.services.RecipeService;
 public class APICoffeeTest {
 
     @Autowired
-    private MockMvc          mvc;
+    private MockMvc           mvc;
 
     @Autowired
-    private RecipeService    service;
+    private RecipeService     recipeService;
 
     @Autowired
-    private InventoryService iService;
+    private InventoryService  iService;
+
+    @Autowired
+    private IngredientService ingredientService;
 
     /**
      * Sets up the tests.
@@ -44,21 +50,22 @@ public class APICoffeeTest {
 
         final Inventory ivt = iService.getInventory();
 
-        ivt.setChocolate( 15 );
-        ivt.setCoffee( 15 );
-        ivt.setMilk( 15 );
-        ivt.setSugar( 15 );
-
+        ivt.addIngredient( new Ingredient( "Matcha", 5 ) );
+        ivt.addIngredient( new Ingredient( "Milk", 5 ) );
         iService.save( ivt );
+        Assert.assertEquals( ivt.getIngredients().size(), 2 );
 
         final Recipe recipe = new Recipe();
         recipe.setName( "Coffee" );
+        final Ingredient i1 = new Ingredient( "Matcha", 2 );
+        final Ingredient i2 = new Ingredient( "Milk", 4 );
+        ingredientService.save( i1 );
+        ingredientService.save( i2 );
+        recipe.addIngredient( i1 );
+        recipe.addIngredient( i2 );
         recipe.setPrice( 50 );
-        recipe.setCoffee( 3 );
-        recipe.setMilk( 1 );
-        recipe.setSugar( 1 );
-        recipe.setChocolate( 0 );
-        service.save( recipe );
+        recipeService.save( recipe );
+
     }
 
     @Test
@@ -81,7 +88,7 @@ public class APICoffeeTest {
         final String name = "Coffee";
 
         mvc.perform( post( String.format( "/api/v1/makecoffee/%s", name ) ).contentType( MediaType.APPLICATION_JSON )
-                .content( TestUtils.asJsonString( 40 ) ) ).andExpect( status().is4xxClientError() )
+                .content( TestUtils.asJsonString( 10 ) ) ).andExpect( status().is4xxClientError() )
                 .andExpect( jsonPath( "$.message" ).value( "Not enough money paid" ) );
 
     }
@@ -92,7 +99,8 @@ public class APICoffeeTest {
         /* Insufficient inventory */
 
         final Inventory ivt = iService.getInventory();
-        ivt.setCoffee( 0 );
+        ivt.addIngredient( new Ingredient( "Matcha", 0 ) );
+        ivt.addIngredient( new Ingredient( "Milk", 0 ) );
         iService.save( ivt );
 
         final String name = "Coffee";
