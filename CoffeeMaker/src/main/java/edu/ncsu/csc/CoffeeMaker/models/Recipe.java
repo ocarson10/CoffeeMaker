@@ -1,8 +1,14 @@
 package edu.ncsu.csc.CoffeeMaker.models;
 
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.Min;
 
 /**
@@ -18,45 +24,25 @@ public class Recipe extends DomainObject {
     /** Recipe id */
     @Id
     @GeneratedValue
-    private Long    id;
+    private Long                   id;
 
     /** Recipe name */
-    private String  name;
+    private String                 name;
 
     /** Recipe price */
     @Min ( 0 )
-    private Integer price;
+    private Integer                price;
 
-    /** Amount coffee */
-    @Min ( 0 )
-    private Integer coffee;
-
-    /** Amount milk */
-    @Min ( 0 )
-    private Integer milk;
-
-    /** Amount sugar */
-    @Min ( 0 )
-    private Integer sugar;
-
-    /** Amount chocolate */
-    @Min ( 0 )
-    private Integer chocolate;
+    /** List of new ingredients */
+    @OneToMany ( cascade = CascadeType.ALL, fetch = FetchType.EAGER )
+    private final List<Ingredient> ingredients;
 
     /**
      * Creates a default recipe for the coffee maker.
      */
     public Recipe () {
         this.name = "";
-    }
-
-    /**
-     * Check if all ingredient fields in the recipe are 0
-     *
-     * @return true if all ingredient fields are 0, otherwise return false
-     */
-    public boolean checkRecipe () {
-        return coffee == 0 && milk == 0 && sugar == 0 && chocolate == 0;
+        ingredients = new LinkedList<Ingredient>();
     }
 
     /**
@@ -78,82 +64,6 @@ public class Recipe extends DomainObject {
     @SuppressWarnings ( "unused" )
     private void setId ( final Long id ) {
         this.id = id;
-    }
-
-    /**
-     * Returns amount of chocolate in the recipe.
-     *
-     * @return Returns the amtChocolate.
-     */
-    public Integer getChocolate () {
-        return chocolate;
-    }
-
-    /**
-     * Sets the amount of chocolate in the recipe.
-     *
-     * @param chocolate
-     *            The amtChocolate to set.
-     */
-    public void setChocolate ( final Integer chocolate ) {
-        this.chocolate = chocolate;
-    }
-
-    /**
-     * Returns amount of coffee in the recipe.
-     *
-     * @return Returns the amtCoffee.
-     */
-    public Integer getCoffee () {
-        return coffee;
-    }
-
-    /**
-     * Sets the amount of coffee in the recipe.
-     *
-     * @param coffee
-     *            The amtCoffee to set.
-     */
-    public void setCoffee ( final Integer coffee ) {
-        this.coffee = coffee;
-    }
-
-    /**
-     * Returns amount of milk in the recipe.
-     *
-     * @return Returns the amtMilk.
-     */
-    public Integer getMilk () {
-        return milk;
-    }
-
-    /**
-     * Sets the amount of milk in the recipe.
-     *
-     * @param milk
-     *            The amtMilk to set.
-     */
-    public void setMilk ( final Integer milk ) {
-        this.milk = milk;
-    }
-
-    /**
-     * Returns amount of sugar in the recipe.
-     *
-     * @return Returns the amtSugar.
-     */
-    public Integer getSugar () {
-        return sugar;
-    }
-
-    /**
-     * Sets the amount of sugar in the recipe.
-     *
-     * @param sugar
-     *            The amtSugar to set.
-     */
-    public void setSugar ( final Integer sugar ) {
-        this.sugar = sugar;
     }
 
     /**
@@ -195,27 +105,61 @@ public class Recipe extends DomainObject {
     }
 
     /**
-     * Updates the fields to be equal to the passed Recipe
+     * Adds an ingredient
      *
-     * @param r
-     *            with updated fields
+     * @param ing
+     *            ingredient to add
+     *
      */
-    public void updateRecipe ( final Recipe r ) {
-        setChocolate( r.getChocolate() );
-        setCoffee( r.getCoffee() );
-        setMilk( r.getMilk() );
-        setSugar( r.getSugar() );
-        setPrice( r.getPrice() );
+    public void addIngredient ( final Ingredient ing ) {
+        if ( ing != null && ing.getAmount() >= 0 ) {
+            ingredients.add( ing );
+        }
+    }
+
+    private Integer findIngredientByName ( final String name ) {
+        for ( int i = 0; i < ingredients.size(); i++ ) {
+            if ( ingredients.get( i ).getName().equals( name ) && name != null ) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     /**
-     * Returns the name of the recipe.
+     * Sets ingredient amount
+     *
+     * @param name
+     *            name of ingredient to be set
+     * @param amount
+     *            amount of ingredient to be set for recipe
+     *
+     */
+    public void setIngredient ( final String name, final Integer amount ) {
+        final int index = findIngredientByName( name );
+        ingredients.get( index ).setAmount( amount );
+
+    }
+
+    /**
+     * Gets ingredient list
+     *
+     *
+     * @return ingredient list
+     *
+     */
+    public List<Ingredient> getIngredients () {
+        return ingredients;
+    }
+
+    /**
+     * Returns the name of the recipe and the ingredients.
      *
      * @return String
      */
     @Override
     public String toString () {
-        return name;
+        return name + " " + ingredients.toString();
     }
 
     @Override

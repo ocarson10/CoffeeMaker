@@ -16,34 +16,66 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import edu.ncsu.csc.CoffeeMaker.models.Ingredient;
+import edu.ncsu.csc.CoffeeMaker.models.Inventory;
 import edu.ncsu.csc.CoffeeMaker.models.Recipe;
+import edu.ncsu.csc.CoffeeMaker.services.IngredientService;
+import edu.ncsu.csc.CoffeeMaker.services.InventoryService;
 import edu.ncsu.csc.CoffeeMaker.services.RecipeService;
-
+/**
+ * Tests the Databases and their functionality
+ * @author csc326
+ *
+ */
 @RunWith ( SpringRunner.class )
 @EnableAutoConfiguration
 @SpringBootTest ( classes = TestConfig.class )
-
 public class TestDatabaseInteraction {
-
+	/** RecipeService to test for recipes*/
     @Autowired
-    private RecipeService recipeService;
+    private RecipeService     recipeService;
+	/** InventoryService to test for inventory*/
+    @Autowired
+    private InventoryService  iService;
+	/** IngredientService to test for ingredients*/
+    @Autowired
+    private IngredientService ingredientService;
 
+    /**
+     * Tests adding and deleting recipes 
+     */
     @Test
     @Transactional
     public void testRecipes () {
         /* We'll fill this out in a bit */
         recipeService.deleteAll();
-        final Recipe r = new Recipe();
 
-        /* set fields here */
-        r.setName( "Mocha" );
-        r.setPrice( 350 );
-        r.setCoffee( 2 );
-        r.setSugar( 1 );
-        r.setMilk( 1 );
-        r.setChocolate( 1 );
+        final Inventory ivt = iService.getInventory();
 
-        recipeService.save( r );
+        ivt.addIngredient( new Ingredient( "Coffee", 5 ) );
+        ivt.addIngredient( new Ingredient( "Sugar", 5 ) );
+        ivt.addIngredient( new Ingredient( "Milk", 5 ) );
+        ivt.addIngredient( new Ingredient( "Chocolate", 5 ) );
+
+        iService.save( ivt );
+
+        final Recipe recipe = new Recipe();
+        recipe.setName( "Mocha" );
+        final Ingredient i1 = new Ingredient( "Coffee", 2 );
+        final Ingredient i2 = new Ingredient( "Sugar", 4 );
+        final Ingredient i3 = new Ingredient( "Milk", 1 );
+        final Ingredient i4 = new Ingredient( "Chocolate", 1 );
+        ingredientService.save( i1 );
+        ingredientService.save( i2 );
+        ingredientService.save( i3 );
+        ingredientService.save( i4 );
+        recipe.addIngredient( i1 );
+        recipe.addIngredient( i2 );
+        recipe.addIngredient( i3 );
+        recipe.addIngredient( i4 );
+
+        recipe.setPrice( 5 );
+        recipeService.save( recipe );
 
         final List<Recipe> dbRecipes = recipeService.findAll();
 
@@ -51,23 +83,21 @@ public class TestDatabaseInteraction {
 
         final Recipe dbRecipe = dbRecipes.get( 0 );
 
-        assertEquals( r.getName(), dbRecipe.getName() );
+        assertEquals( recipe.getName(), dbRecipe.getName() );
         /* Other fields would get tested one at a time here too */
 
-        assertEquals( r.getPrice(), dbRecipe.getPrice() );
-        assertEquals( r.getCoffee(), dbRecipe.getCoffee() );
-        assertEquals( r.getSugar(), dbRecipe.getSugar() );
-        assertEquals( r.getMilk(), dbRecipe.getMilk() );
-        assertEquals( r.getChocolate(), dbRecipe.getChocolate() );
+        assertEquals( recipe.getPrice(), dbRecipe.getPrice() );
+        assertEquals( recipe.getIngredients(), dbRecipe.getIngredients() );
 
         final Recipe dbRecipeByName = recipeService.findByName( "Mocha" );
 
-        assertEquals( r.getChocolate(), dbRecipeByName.getChocolate() );
+        // assertEquals( r.getChocolate(), dbRecipeByName.getChocolate() );
 
         // edit recipe
         dbRecipe.setPrice( 12 );
-        dbRecipe.setSugar( 2 );
-        dbRecipe.setMilk( 14 );
+        dbRecipe.setIngredient( "Sugar", 2 );
+        dbRecipe.setIngredient( "Milk", 14 );
+
         recipeService.save( dbRecipe );
 
         assertEquals( 1, recipeService.count() );
@@ -75,8 +105,8 @@ public class TestDatabaseInteraction {
         // verify edited recipe
         assertEquals( 12, (int) recipeService.findAll().get( 0 ).getPrice() );
 
-        assertEquals( 2, (int) recipeService.findAll().get( 0 ).getSugar() );
-        assertEquals( 14, (int) recipeService.findAll().get( 0 ).getMilk() );
+        assertEquals( 2, (int) recipeService.findAll().get( 0 ).getIngredients().get( 1 ).getAmount() );
+        assertEquals( 14, (int) recipeService.findAll().get( 0 ).getIngredients().get( 2 ).getAmount() );
 
         // test delete
 
@@ -87,33 +117,87 @@ public class TestDatabaseInteraction {
 
         // tests for deleting all recipes
         final Recipe r1 = new Recipe();
-        final Recipe r2 = new Recipe();
-        final Recipe r3 = new Recipe();
 
-        /* set fields here */
+        final Inventory ivt1 = iService.getInventory();
+
+        ivt1.addIngredient( new Ingredient( "Coffee", 5 ) );
+        ivt1.addIngredient( new Ingredient( "Sugar", 5 ) );
+        ivt1.addIngredient( new Ingredient( "Milk", 5 ) );
+        ivt1.addIngredient( new Ingredient( "Chocolate", 5 ) );
+
+        iService.save( ivt1 );
+
         r1.setName( "Mocha" );
-        r1.setPrice( 350 );
-        r1.setCoffee( 2 );
-        r1.setSugar( 1 );
-        r1.setMilk( 1 );
-        r1.setChocolate( 1 );
+        final Ingredient i5 = new Ingredient( "Coffee", 2 );
+        final Ingredient i6 = new Ingredient( "Sugar", 4 );
+        final Ingredient i7 = new Ingredient( "Milk", 1 );
+        final Ingredient i8 = new Ingredient( "Chocolate", 1 );
+        ingredientService.save( i5 );
+        ingredientService.save( i6 );
+        ingredientService.save( i7 );
+        ingredientService.save( i8 );
+        r1.addIngredient( i5 );
+        r1.addIngredient( i6 );
+        r1.addIngredient( i7 );
+        r1.addIngredient( i8 );
+
+        r1.setPrice( 5 );
         recipeService.save( r1 );
 
+        final Recipe r2 = new Recipe();
+
+        final Inventory ivt2 = iService.getInventory();
+
+        ivt2.addIngredient( new Ingredient( "Coffee", 5 ) );
+        ivt2.addIngredient( new Ingredient( "Sugar", 5 ) );
+        ivt2.addIngredient( new Ingredient( "Milk", 5 ) );
+        ivt2.addIngredient( new Ingredient( "Chocolate", 5 ) );
+
+        iService.save( ivt2 );
+
         r2.setName( "Coffee" );
-        r2.setPrice( 360 );
-        r2.setCoffee( 3 );
-        r2.setSugar( 4 );
-        r2.setMilk( 2 );
-        r2.setChocolate( 3 );
+        final Ingredient i9 = new Ingredient( "Coffee", 2 );
+        final Ingredient i10 = new Ingredient( "Sugar", 4 );
+        final Ingredient i11 = new Ingredient( "Milk", 1 );
+        final Ingredient i12 = new Ingredient( "Chocolate", 1 );
+        ingredientService.save( i9 );
+        ingredientService.save( i10 );
+        ingredientService.save( i11 );
+        ingredientService.save( i12 );
+        r2.addIngredient( i9 );
+        r2.addIngredient( i10 );
+        r2.addIngredient( i11 );
+        r2.addIngredient( i12 );
+
+        r2.setPrice( 5 );
         recipeService.save( r2 );
 
-        r3.setName( "Latte" );
-        r3.setPrice( 370 );
-        r3.setCoffee( 5 );
-        r3.setSugar( 3 );
-        r3.setMilk( 2 );
-        r3.setChocolate( 2 );
+        final Recipe r3 = new Recipe();
 
+        final Inventory ivt3 = iService.getInventory();
+
+        ivt3.addIngredient( new Ingredient( "Coffee", 5 ) );
+        ivt3.addIngredient( new Ingredient( "Sugar", 5 ) );
+        ivt3.addIngredient( new Ingredient( "Milk", 5 ) );
+        ivt3.addIngredient( new Ingredient( "Chocolate", 5 ) );
+
+        iService.save( ivt3 );
+
+        r3.setName( "Latte" );
+        final Ingredient i13 = new Ingredient( "Coffee", 2 );
+        final Ingredient i14 = new Ingredient( "Sugar", 4 );
+        final Ingredient i15 = new Ingredient( "Milk", 1 );
+        final Ingredient i16 = new Ingredient( "Chocolate", 1 );
+        ingredientService.save( i13 );
+        ingredientService.save( i14 );
+        ingredientService.save( i15 );
+        ingredientService.save( i16 );
+        r3.addIngredient( i13 );
+        r3.addIngredient( i14 );
+        r3.addIngredient( i15 );
+        r3.addIngredient( i16 );
+
+        r3.setPrice( 5 );
         recipeService.save( r3 );
 
         final List<Recipe> dbAllRecipes = recipeService.findAll();
@@ -138,39 +222,93 @@ public class TestDatabaseInteraction {
      * created to ensure that the existsById method from the Service abstract
      * class properly works.
      */
-
     @Test
     @Transactional
     public void testExistsById () {
         recipeService.deleteAll();
 
         final Recipe r1 = new Recipe();
-        final Recipe r2 = new Recipe();
-        final Recipe r3 = new Recipe();
 
-        /* set fields here */
+        final Inventory ivt1 = iService.getInventory();
+
+        ivt1.addIngredient( new Ingredient( "Coffee", 5 ) );
+        ivt1.addIngredient( new Ingredient( "Sugar", 5 ) );
+        ivt1.addIngredient( new Ingredient( "Milk", 5 ) );
+        ivt1.addIngredient( new Ingredient( "Chocolate", 5 ) );
+
+        iService.save( ivt1 );
+
         r1.setName( "Mocha" );
-        r1.setPrice( 350 );
-        r1.setCoffee( 2 );
-        r1.setSugar( 1 );
-        r1.setMilk( 1 );
-        r1.setChocolate( 1 );
+        final Ingredient i5 = new Ingredient( "Coffee", 2 );
+        final Ingredient i6 = new Ingredient( "Sugar", 4 );
+        final Ingredient i7 = new Ingredient( "Milk", 1 );
+        final Ingredient i8 = new Ingredient( "Chocolate", 1 );
+        ingredientService.save( i5 );
+        ingredientService.save( i6 );
+        ingredientService.save( i7 );
+        ingredientService.save( i8 );
+        r1.addIngredient( i5 );
+        r1.addIngredient( i6 );
+        r1.addIngredient( i7 );
+        r1.addIngredient( i8 );
+
+        r1.setPrice( 5 );
         recipeService.save( r1 );
 
+        final Recipe r2 = new Recipe();
+
+        final Inventory ivt2 = iService.getInventory();
+
+        ivt2.addIngredient( new Ingredient( "Coffee", 5 ) );
+        ivt2.addIngredient( new Ingredient( "Sugar", 5 ) );
+        ivt2.addIngredient( new Ingredient( "Milk", 5 ) );
+        ivt2.addIngredient( new Ingredient( "Chocolate", 5 ) );
+
+        iService.save( ivt2 );
+
         r2.setName( "Coffee" );
-        r2.setPrice( 360 );
-        r2.setCoffee( 3 );
-        r2.setSugar( 4 );
-        r2.setMilk( 2 );
-        r2.setChocolate( 3 );
+        final Ingredient i9 = new Ingredient( "Coffee", 2 );
+        final Ingredient i10 = new Ingredient( "Sugar", 4 );
+        final Ingredient i11 = new Ingredient( "Milk", 1 );
+        final Ingredient i12 = new Ingredient( "Chocolate", 1 );
+        ingredientService.save( i9 );
+        ingredientService.save( i10 );
+        ingredientService.save( i11 );
+        ingredientService.save( i12 );
+        r2.addIngredient( i9 );
+        r2.addIngredient( i10 );
+        r2.addIngredient( i11 );
+        r2.addIngredient( i12 );
+
+        r2.setPrice( 5 );
         recipeService.save( r2 );
 
+        final Recipe r3 = new Recipe();
+
+        final Inventory ivt3 = iService.getInventory();
+
+        ivt3.addIngredient( new Ingredient( "Coffee", 5 ) );
+        ivt3.addIngredient( new Ingredient( "Sugar", 5 ) );
+        ivt3.addIngredient( new Ingredient( "Milk", 5 ) );
+        ivt3.addIngredient( new Ingredient( "Chocolate", 5 ) );
+
+        iService.save( ivt3 );
+
         r3.setName( "Latte" );
-        r3.setPrice( 370 );
-        r3.setCoffee( 5 );
-        r3.setSugar( 3 );
-        r3.setMilk( 2 );
-        r3.setChocolate( 2 );
+        final Ingredient i13 = new Ingredient( "Coffee", 2 );
+        final Ingredient i14 = new Ingredient( "Sugar", 4 );
+        final Ingredient i15 = new Ingredient( "Milk", 1 );
+        final Ingredient i16 = new Ingredient( "Chocolate", 1 );
+        ingredientService.save( i13 );
+        ingredientService.save( i14 );
+        ingredientService.save( i15 );
+        ingredientService.save( i16 );
+        r3.addIngredient( i13 );
+        r3.addIngredient( i14 );
+        r3.addIngredient( i15 );
+        r3.addIngredient( i16 );
+
+        r3.setPrice( 5 );
         recipeService.save( r3 );
 
         final long id1 = r1.getId();
@@ -190,39 +328,93 @@ public class TestDatabaseInteraction {
      * created to ensure that the findById method from the Service abstract
      * class properly works.
      */
-
     @Test
     @Transactional
     public void testFindById () {
         recipeService.deleteAll();
 
         final Recipe r1 = new Recipe();
-        final Recipe r2 = new Recipe();
-        final Recipe r3 = new Recipe();
 
-        /* set fields here */
+        final Inventory ivt1 = iService.getInventory();
+
+        ivt1.addIngredient( new Ingredient( "Coffee", 5 ) );
+        ivt1.addIngredient( new Ingredient( "Sugar", 5 ) );
+        ivt1.addIngredient( new Ingredient( "Milk", 5 ) );
+        ivt1.addIngredient( new Ingredient( "Chocolate", 5 ) );
+
+        iService.save( ivt1 );
+
         r1.setName( "Mocha" );
-        r1.setPrice( 350 );
-        r1.setCoffee( 2 );
-        r1.setSugar( 1 );
-        r1.setMilk( 1 );
-        r1.setChocolate( 1 );
+        final Ingredient i5 = new Ingredient( "Coffee", 2 );
+        final Ingredient i6 = new Ingredient( "Sugar", 4 );
+        final Ingredient i7 = new Ingredient( "Milk", 1 );
+        final Ingredient i8 = new Ingredient( "Chocolate", 1 );
+        ingredientService.save( i5 );
+        ingredientService.save( i6 );
+        ingredientService.save( i7 );
+        ingredientService.save( i8 );
+        r1.addIngredient( i5 );
+        r1.addIngredient( i6 );
+        r1.addIngredient( i7 );
+        r1.addIngredient( i8 );
+
+        r1.setPrice( 5 );
         recipeService.save( r1 );
 
+        final Recipe r2 = new Recipe();
+
+        final Inventory ivt2 = iService.getInventory();
+
+        ivt2.addIngredient( new Ingredient( "Coffee", 5 ) );
+        ivt2.addIngredient( new Ingredient( "Sugar", 5 ) );
+        ivt2.addIngredient( new Ingredient( "Milk", 5 ) );
+        ivt2.addIngredient( new Ingredient( "Chocolate", 5 ) );
+
+        iService.save( ivt2 );
+
         r2.setName( "Coffee" );
-        r2.setPrice( 360 );
-        r2.setCoffee( 3 );
-        r2.setSugar( 4 );
-        r2.setMilk( 2 );
-        r2.setChocolate( 3 );
+        final Ingredient i9 = new Ingredient( "Coffee", 2 );
+        final Ingredient i10 = new Ingredient( "Sugar", 4 );
+        final Ingredient i11 = new Ingredient( "Milk", 1 );
+        final Ingredient i12 = new Ingredient( "Chocolate", 1 );
+        ingredientService.save( i9 );
+        ingredientService.save( i10 );
+        ingredientService.save( i11 );
+        ingredientService.save( i12 );
+        r2.addIngredient( i9 );
+        r2.addIngredient( i10 );
+        r2.addIngredient( i11 );
+        r2.addIngredient( i12 );
+
+        r2.setPrice( 5 );
         recipeService.save( r2 );
 
+        final Recipe r3 = new Recipe();
+
+        final Inventory ivt3 = iService.getInventory();
+
+        ivt3.addIngredient( new Ingredient( "Coffee", 5 ) );
+        ivt3.addIngredient( new Ingredient( "Sugar", 5 ) );
+        ivt3.addIngredient( new Ingredient( "Milk", 5 ) );
+        ivt3.addIngredient( new Ingredient( "Chocolate", 5 ) );
+
+        iService.save( ivt3 );
+
         r3.setName( "Latte" );
-        r3.setPrice( 370 );
-        r3.setCoffee( 5 );
-        r3.setSugar( 3 );
-        r3.setMilk( 2 );
-        r3.setChocolate( 2 );
+        final Ingredient i13 = new Ingredient( "Coffee", 2 );
+        final Ingredient i14 = new Ingredient( "Sugar", 4 );
+        final Ingredient i15 = new Ingredient( "Milk", 1 );
+        final Ingredient i16 = new Ingredient( "Chocolate", 1 );
+        ingredientService.save( i13 );
+        ingredientService.save( i14 );
+        ingredientService.save( i15 );
+        ingredientService.save( i16 );
+        r3.addIngredient( i13 );
+        r3.addIngredient( i14 );
+        r3.addIngredient( i15 );
+        r3.addIngredient( i16 );
+
+        r3.setPrice( 5 );
         recipeService.save( r3 );
 
         final long id1 = r1.getId();
@@ -249,33 +441,88 @@ public class TestDatabaseInteraction {
         recipeService.deleteAll();
 
         final Recipe r1 = new Recipe();
-        final Recipe r2 = new Recipe();
-        final Recipe r3 = new Recipe();
 
-        /* set fields here */
+        final Inventory ivt1 = iService.getInventory();
+
+        ivt1.addIngredient( new Ingredient( "Coffee", 5 ) );
+        ivt1.addIngredient( new Ingredient( "Sugar", 5 ) );
+        ivt1.addIngredient( new Ingredient( "Milk", 5 ) );
+        ivt1.addIngredient( new Ingredient( "Chocolate", 5 ) );
+
+        iService.save( ivt1 );
+
         r1.setName( "Mocha" );
-        r1.setPrice( 350 );
-        r1.setCoffee( 2 );
-        r1.setSugar( 1 );
-        r1.setMilk( 1 );
-        r1.setChocolate( 1 );
-        // recipeService.save( r1 );
+        final Ingredient i5 = new Ingredient( "Coffee", 2 );
+        final Ingredient i6 = new Ingredient( "Sugar", 4 );
+        final Ingredient i7 = new Ingredient( "Milk", 1 );
+        final Ingredient i8 = new Ingredient( "Chocolate", 1 );
+        ingredientService.save( i5 );
+        ingredientService.save( i6 );
+        ingredientService.save( i7 );
+        ingredientService.save( i8 );
+        r1.addIngredient( i5 );
+        r1.addIngredient( i6 );
+        r1.addIngredient( i7 );
+        r1.addIngredient( i8 );
+
+        r1.setPrice( 5 );
+        recipeService.save( r1 );
+
+        final Recipe r2 = new Recipe();
+
+        final Inventory ivt2 = iService.getInventory();
+
+        ivt2.addIngredient( new Ingredient( "Coffee", 5 ) );
+        ivt2.addIngredient( new Ingredient( "Sugar", 5 ) );
+        ivt2.addIngredient( new Ingredient( "Milk", 5 ) );
+        ivt2.addIngredient( new Ingredient( "Chocolate", 5 ) );
+
+        iService.save( ivt2 );
 
         r2.setName( "Coffee" );
-        r2.setPrice( 360 );
-        r2.setCoffee( 3 );
-        r2.setSugar( 4 );
-        r2.setMilk( 2 );
-        r2.setChocolate( 3 );
-        // recipeService.save( r2 );
+        final Ingredient i9 = new Ingredient( "Coffee", 2 );
+        final Ingredient i10 = new Ingredient( "Sugar", 4 );
+        final Ingredient i11 = new Ingredient( "Milk", 1 );
+        final Ingredient i12 = new Ingredient( "Chocolate", 1 );
+        ingredientService.save( i9 );
+        ingredientService.save( i10 );
+        ingredientService.save( i11 );
+        ingredientService.save( i12 );
+        r2.addIngredient( i9 );
+        r2.addIngredient( i10 );
+        r2.addIngredient( i11 );
+        r2.addIngredient( i12 );
+
+        r2.setPrice( 5 );
+        recipeService.save( r2 );
+
+        final Recipe r3 = new Recipe();
+
+        final Inventory ivt3 = iService.getInventory();
+
+        ivt3.addIngredient( new Ingredient( "Coffee", 5 ) );
+        ivt3.addIngredient( new Ingredient( "Sugar", 5 ) );
+        ivt3.addIngredient( new Ingredient( "Milk", 5 ) );
+        ivt3.addIngredient( new Ingredient( "Chocolate", 5 ) );
+
+        iService.save( ivt3 );
 
         r3.setName( "Latte" );
-        r3.setPrice( 370 );
-        r3.setCoffee( 5 );
-        r3.setSugar( 3 );
-        r3.setMilk( 2 );
-        r3.setChocolate( 2 );
-        // recipeService.save( r3 );
+        final Ingredient i13 = new Ingredient( "Coffee", 2 );
+        final Ingredient i14 = new Ingredient( "Sugar", 4 );
+        final Ingredient i15 = new Ingredient( "Milk", 1 );
+        final Ingredient i16 = new Ingredient( "Chocolate", 1 );
+        ingredientService.save( i13 );
+        ingredientService.save( i14 );
+        ingredientService.save( i15 );
+        ingredientService.save( i16 );
+        r3.addIngredient( i13 );
+        r3.addIngredient( i14 );
+        r3.addIngredient( i15 );
+        r3.addIngredient( i16 );
+
+        r3.setPrice( 5 );
+        recipeService.save( r3 );
 
         final List<Recipe> allRecipes = new ArrayList<Recipe>();
 
