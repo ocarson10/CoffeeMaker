@@ -5,28 +5,45 @@
 	<div layout:fragment="content">
 		<script	src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.js"></script>
 		<script>
+		
 			/* Without these comments, Thymeleaf will try to parse the Javascript as XML and break itself sometimes */
 			/*<![CDATA[*/ 
+			
+			/* 
+				let x = Object(); 
+				console.log(x);
+				{}
+				
+				x.num = 1234;
+				x.str = "This seems like a rather silly typing system"; 
+				console.log(x);
+			*/
 			var app = angular.module('myApp', []);
 			app.controller('populateCtrl', function($scope, $http, $q) {
 
 				/* Logic that handles controlling your page goes here */
-				let a = 10; 
-				let b = 15; 
-				$scope.sum = (a + b);
+				/*
+					let a = 10; 
+					let b = 15; 
+					$scope.sum = (a + b);
+					
+					console.log($scope.sum); 
+			 	*/
+				$scope.alert = function(){
+				    alert("You entered in: " + $scope.x);
+				}
 			});
-			
-			let x = Object(); 
-			x.num = 1234;
-			console.log(x);
-			{}
 			/* Without these comments, Thymeleaf will try to parse the Javascript as XML and break itself sometimes */
 			/*]]>*/
 		</script>
+		
 
 		<div ng-app="myApp" ng-controller="populateCtrl">
 
 			<!--- Various HTML elements, with extra tags telling Angular how to work with them, go here -->
+			
+			<input type="text" ng-model="x" required="true" />
+			<button type="button" ng-click="alert()">Click Me!</button>
 
 		</div>
 		
