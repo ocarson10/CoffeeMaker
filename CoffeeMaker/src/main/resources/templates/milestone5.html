@@ -32,7 +32,31 @@
 				$scope.math = function(){
 				    $scope.ans = $scope.x - $scope.y;
 				}
+				$scope.ingredientsList = [
+                	{value: 1, display: 'Matcha'},
+                	{value: 2, display: 'Caramel'},
+                	{value: 3, display: 'Cream'},
+                	{value: 4, display: 'Chocolate'}
+                ];
+                
+                $scope.branches = ["Matcha", "Caramel", "Cream", "Chocolate"];
+                
+                $scope.commitData = {
+        "Coffee Order dates":
+            [
+                { "count": 0, "display": "Mocha", "timestamp": 1583038800000 },
+                { "count": 0, "display": "Coffee", "timestamp": 1583211600000 }
+            ],
+        "Other drink order dates":
+            [
+                { "count": 0, "display": "Hot chocolate", "timestamp": 1583038800000 },
+                { "count": 0, "display": "Tea", "timestamp": 1583211600000 },
+                { "count": 0, "display": "Orange juice", "timestamp": 1583384400000 }
+            ]
+    };
 			});
+			
+			
 			/* Without these comments, Thymeleaf will try to parse the Javascript as XML and break itself sometimes */
 			/*]]>*/
 		</script>
@@ -46,6 +70,30 @@
 			<input type="text" ng-model="y" required="true" />
 			<button type="button" ng-click="math()">Click Me!</button>
             <p>Your result is {{ ans }}</p>
+            
+            <div class="col-sm">
+            	Select ingredients: <br />
+            	<select ng-model="ingredients"
+            			ng-options="item as item.display for item in ingredientsList"
+            			required="true">
+            		<option value="">Select ingredient for viewing data</option>
+            	</select>
+            </div><br />
+            
+            <div class="col-sm">
+	          Select the igredients to view <br />
+	            <div ng-repeat="branch in branches track by $index">
+		        <input type="checkbox" ng-model="$parent.selectedBranches[branch]">
+		        <tt> {{branch}}</tt> <!-- remove the extra spaces -->
+		        </input>
+            	</div>
+            </div><br />
+<div ng-repeat="(user, commits) in commitData track by $index">
+	Commits for {{user}}:<br />
+	<div id="{{user}}">
+		<li ng-repeat="commit in commits">{{commit.display}}</li>
+	</div>
+</div>            
 		</div>
 		
 	</div>
