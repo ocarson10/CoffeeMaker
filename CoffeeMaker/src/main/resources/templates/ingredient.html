@@ -56,7 +56,7 @@
 				$scope.success = false;
 				$scope.failure = false;
 
-				$http.post("/api/v1/ingredient", $scope.ingredient).then(
+				$http.post("/api/v1/ingredients", $scope.ingredient).then(
 						function(success) {
 							$scope.success = true;
 							$scope.failure = false;
