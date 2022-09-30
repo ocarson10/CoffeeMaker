@@ -37,13 +37,9 @@
 			console.log("Hit!");
 
 			$scope.reset = function() {
-				$scope.recipe = {
+				$scope.ingredient = {
 					name : '',
-					price : '',
-					coffee : '',
-					milk : '',
-					sugar : '',
-					chocolate : ''
+					amount: '',
 				};
 				if (undefined != $scope.addIngredientForm) {
 					$scope.addIngredientForm.$setPristine(); // reset Form
@@ -65,7 +61,7 @@
 							$scope.success = true;
 							$scope.failure = false;
 						}, function(rejection) {
-							console.error("Error while adding ingredient");
+							alert("Error while adding ingredient");
 						});
 			}
 
