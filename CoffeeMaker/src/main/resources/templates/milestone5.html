@@ -29,8 +29,8 @@
 					
 					console.log($scope.sum); 
 			 	*/
-				$scope.math = function(a,b){
-				    return a - b;
+				$scope.math = function(){
+				    $scope.ans = $scope.x - $scope.y;
 				}
 			});
 			/* Without these comments, Thymeleaf will try to parse the Javascript as XML and break itself sometimes */
@@ -44,8 +44,8 @@
 			
 			<input type="text" ng-model="x" required="true" />
 			<input type="text" ng-model="y" required="true" />
-
-            <p>Your result is {{ math(x,y) }}</p>
+			<button type="button" ng-click="math()">Click Me!</button>
+            <p>Your result is {{ ans }}</p>
 		</div>
 		
 	</div>
