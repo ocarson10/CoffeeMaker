@@ -43,10 +43,11 @@
 				$scope.recipe = {
 					name : '',
 					price : '',
-					coffee : '',
-					milk : '',
-					sugar : '',
-					chocolate : ''
+				/*	for (var i = 0, len = $scope.ingredients.length; i < len; i++) {
+						var ingredient = $scope.ingredients[i];
+						delet
+	  				}
+				*/
 				};
 				if (undefined != $scope.addRecipeForm) {
 					$scope.addRecipeForm.$setPristine(); // reset Form
@@ -74,6 +75,12 @@
 			}
 
 			$scope.reset();
+			$scope.amounts = [];
+			for (var i = 0, len = $scope.ingredients.length; i < len; i++) {
+				var ingredient = $scope.ingredients[i];
+				recipe.ingredients[i] = ingredient;
+				recipe.ingredients[i].amount = amounts[i];
+			}
 
 		});
 		/*]]>*/
@@ -82,13 +89,8 @@
 
 
 	<div ng-app="myApp" class="generic-container ng-cloak"
-		ng-controller="addRecipeCtrl as ctrl">
-		<ul>
-				<li ng-repeat="Ingredients in recipes"><label>{{ingredient.name}}
-						<input type="radio" ng-model="$parent.name" name="name"
-						value="{{ingredient.name}}" required="true" />
-				</label></li>
-			</ul>
+		ng-controller="addRecipeCtrl">
+	
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				<span class="lead">Add a Recipe</span>
@@ -99,6 +101,17 @@
 				<form ng-submit="submit()" name="addRecipeForm"
 					class="form-horizontal">
 
+					<div class="row">
+						<div class="form-group col-md-12" ng-repeat="ingredient in ingredients">
+							
+							<input type="checkbox" ng-model = "$parent.name">	
+							<tt> {{ingredient.name}}</tt>
+								<input type="text" ng-model="amounts" required="true" />
+								</input>	
+								console.log(recipe.ingredients);
+						</div>
+						
+						
 			
 					<div class="row">
 						<div class="form-group col-md-12">
