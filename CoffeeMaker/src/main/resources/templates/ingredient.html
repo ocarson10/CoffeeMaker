@@ -82,16 +82,7 @@
 			<div class="panel-heading">
 				<span class="lead">Add an Ingredient</span>
 			</div>
-					<div class="row">
-						<div class="form-group col-md-12">
-							<ul>
-							<li ng-repeat="Ingredients in recipes"><label>{{ingredient.name}}
-								<input type="radio" ng-model="$parent.name" name="name"
-								value="{{ingredient.name}}" required="true" />
-							</label></li>
-							</ul>
-						</div>
-					</div>
+					
 			<div class="formcontainer">
 				<form ng-submit="submit()" name="addIngredientForm"
 					class="form-horizontal">

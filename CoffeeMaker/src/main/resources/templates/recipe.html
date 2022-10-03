@@ -36,12 +36,19 @@
 		app.controller('addRecipeCtrl', function($scope, $http, $q) {
 			console.log("Hit!");
 			$http.get("/api/v1/ingredients").then(function (response) {
-  				$scope.recipe.ingredients = response.data;
+  				$scope.ingredients = response.data;
   			});
 
 			
-			 $scope.addItem = function () {
-				    $scope.recipe_ingredients.push($scope.ingredient);
+			 $scope.add = function () {
+				  	$scope.added = [];
+				  	$scope.ingredients.forEach(function(ingredient){
+				  		if(ingredient.selected){
+				  			$scope.recipe_ingredients.arr.push(ingredient);
+				  			ingredient.amount = $scope.amount;
+				  		}
+				  	})
+				 
 				  }
 			
 						
@@ -75,7 +82,7 @@
 			$scope.addRecipe = function() {
 				$scope.success = false;
 				$scope.failure = false;
-				 
+				
 				$http.post("/api/v1/recipes", $scope.recipe).then(
 						function(success) {
 							$scope.success = true;
@@ -110,7 +117,7 @@
 
 					
 						
-			
+
 					<div class="row">
 						<div class="form-group col-md-12">
 							<label class="col-md-2 control-lable" for="file">Name</label>
@@ -146,29 +153,25 @@
 						</div>
 					</div>
 					
-					
+					<div class="row">
+						<div class="form-group col-md-12">
+						Select ingredients to add to the recipe <br/>
+					<div ng-repeat="ingredient in ingredients">
+						<input type="checkbox" 
+							ng-model="ingredient.selected">
+							{{ingredient.name}}
+						</input>
+						<div ng-show = "ingredient.selected">
+						{{ingredient.name}} <input type = "text" ng-model = "amount"></input>
+						</div>
 						
-						<div class="row">
-						<div class="form-group col-md-12" ng-repeat="ingredient in recipe.ingredients">
-							<label class="col-md-2 control-lable" for="file">{{ingredient.name}}</label>
-							<div class="col-md-7">
-								<input type="text" ng-model="ingredient.amount" name="ingredientName"
-									class="ingredient form-control input-sm"
-									placeholder="Enter amount of {{ingredient.name}}" required="0" />
-								<div class="has-error" ng-show="addRecipeForm.$dirty">
-									<span ng-show="addRecipeForm.ingredient.$error.required">This
-										is a required field</span> <span
-										ng-show="addRecipeForm.ingredient.$error.min">Minimum
-										amount is 0</span> <span ng-show="addRecipeForm.coffee.$invalid">This
-										field is invalid </span>
-								</div>
-							</div>
+					</div>
+					<button type= "button" ng-click = "add()">Enter</button>
+					
+					
 						</div>
 					</div>
-
-
-    					
-					</div>
+				
 					<div class="row">
 						<div class="form-actions floatRight">
 							<input type="submit" value="Submit"
