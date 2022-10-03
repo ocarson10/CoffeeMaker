@@ -1,7 +1,5 @@
 package edu.ncsu.csc.CoffeeMaker.data_gen;
 
-import javax.transaction.Transactional;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,7 +40,7 @@ public class GenerateRecipeWithIngredients {
      * Tests to make sure recipe was created successfully
      */
     @Test
-    @Transactional
+    // @Transactional
     public void createRecipe () {
         final Recipe r1 = new Recipe();
         r1.setName( "Delicious Coffee" );
