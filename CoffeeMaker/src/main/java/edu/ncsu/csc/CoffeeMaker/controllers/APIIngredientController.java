@@ -42,7 +42,7 @@ public class APIIngredientController extends APIController {
      *
      * @return JSON representation of all ingredients
      */
-    @GetMapping ( BASE_PATH + "/ingredient" )
+    @GetMapping ( BASE_PATH + "/ingredients" )
     public List<Ingredient> getIngredients () {
         return service.findAll();
     }
@@ -56,7 +56,7 @@ public class APIIngredientController extends APIController {
      *            ingredient name
      * @return response to the request
      */
-    @GetMapping ( BASE_PATH + "/ingredient/{name}" )
+    @GetMapping ( BASE_PATH + "/ingredients/{name}" )
     public ResponseEntity getIngredient ( @PathVariable ( "name" ) final String name ) {
         final Ingredient ingredient = service.findByName( name );
         return null == ingredient
@@ -74,7 +74,7 @@ public class APIIngredientController extends APIController {
      * @return ResponseEntity indicating success if the ingredient could be
      *         saved to the inventory, or an error if it could not be
      */
-    @PostMapping ( BASE_PATH + "/ingredient" )
+    @PostMapping ( BASE_PATH + "/ingredients" )
     public ResponseEntity createIngredient ( @RequestBody final Ingredient ingredient ) {
         if ( null != service.findByName( ingredient.getName() ) ) {
             return new ResponseEntity(
@@ -96,7 +96,7 @@ public class APIIngredientController extends APIController {
      * @return Success if the ingredient could be deleted; an error if the
      *         recipe does not exist
      */
-    @DeleteMapping ( BASE_PATH + "/ingredient/{name}" )
+    @DeleteMapping ( BASE_PATH + "/ingredients/{name}" )
     public ResponseEntity deleteIngredient ( @PathVariable final String name ) {
         final Ingredient ingredient = service.findByName( name );
         if ( null == ingredient ) {

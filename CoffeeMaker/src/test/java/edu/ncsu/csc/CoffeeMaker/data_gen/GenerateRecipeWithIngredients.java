@@ -1,7 +1,5 @@
 package edu.ncsu.csc.CoffeeMaker.data_gen;
 
-import javax.transaction.Transactional;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,14 +7,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import edu.ncsu.csc.CoffeeMaker.TestConfig;
 import edu.ncsu.csc.CoffeeMaker.models.DomainObject;
 import edu.ncsu.csc.CoffeeMaker.models.Ingredient;
 import edu.ncsu.csc.CoffeeMaker.models.Recipe;
 import edu.ncsu.csc.CoffeeMaker.services.RecipeService;
+
 /**
  * Tests GenerateRecipeWithIngredients class and its functionality
+ *
  * @author csc326
  *
  */
@@ -24,17 +25,18 @@ import edu.ncsu.csc.CoffeeMaker.services.RecipeService;
 @EnableAutoConfiguration
 @SpringBootTest ( classes = TestConfig.class )
 public class GenerateRecipeWithIngredients {
-	/** RecipeService for this class*/
+    /** RecipeService for this class */
     @Autowired
     private RecipeService recipeService;
 
     /**
-     * Deletes all the items in the service before each test 
+     * Deletes all the items in the service before each test
      */
     @Before
     public void setup () {
         recipeService.deleteAll();
     }
+
     /**
      * Tests to make sure recipe was created successfully
      */

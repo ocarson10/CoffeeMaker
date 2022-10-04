@@ -47,6 +47,7 @@ public class IngredientTest {
     @Test
     @Transactional
     public void testCreateIngredient () {
+
         final Ingredient i1 = new Ingredient( "Matcha", 100 );
         service.save( i1 );
         final LinkedList<Ingredient> ingredients = new LinkedList<Ingredient>();
