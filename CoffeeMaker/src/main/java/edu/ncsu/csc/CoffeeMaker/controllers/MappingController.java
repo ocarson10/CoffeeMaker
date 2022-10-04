@@ -26,6 +26,21 @@ public class MappingController {
     public String index ( final Model model ) {
         return "index";
     }
+    
+    /**
+     * On a GET request to /milestone5, the Milestone5Controller will return
+     * /src/main/resources/templates/milestone5.html.
+     *
+     * @param model
+     *            underlying UI model
+     * @return contents of the page
+     */
+    @GetMapping ( { "/milestone5", "/milestone5.html" } )
+    public String addMilestone5Page ( final Model model ) {
+        return "milestone5";
+    }
+    
+    
 
     /**
      * On a GET request to /recipe, the RecipeController will return
@@ -108,16 +123,17 @@ public class MappingController {
     }
     
     /**
-     * On a GET request to /addingredients, the MakeCoffeeController will return
-     * /src/main/resources/templates/addingredients.html.
+     * On a GET request to /ingredient, the APIIngredientController will return
+     * /src/main/resources/templates/ingredient.html.
      *
      * @param model
      *            underlying UI model
      * @return contents of the page
      */
-    @GetMapping ( { "/addingredients", "/addingredients.html" } )
-    public String addingredientsForm ( final Model model ) {
-        return "addingredients";
+    @GetMapping ( { "/ingredient", "/ingredient.html" } )
+    public String addIngredientPage ( final Model model ) {
+        return "ingredient";
     }
+
 
 }
