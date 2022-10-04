@@ -37,30 +37,27 @@
 			console.log("Hit!");
 			$http.get("/api/v1/ingredients").then(function (response) {
   				$scope.ingredients = response.data;
+  				console.log($scope.ingredients);
   			});
-
 			
-			 $scope.add = function () {
-				  	$scope.added = [];
-				  	$scope.ingredients.forEach(function(ingredient){
-				  		if(ingredient.selected){
-				  			$scope.recipe_ingredients.arr.push(ingredient);
-				  			ingredient.amount = $scope.amount;
-				  		}
-				  	})
-				 
-				  }
-			
-						
+		
+			$scope.recipe = {
+					name : '',
+					price : '',
+					ingredients : []
+				
+				};
+		
 				 
 			$scope.reset = function() {
 				$scope.recipe = {
 					name : '',
 					price : '',
-					ingredientName : ''
+					ingredients : []
 
 				
 				};
+				$scope.amount= '';
 				if (undefined != $scope.addRecipeForm) {
 					$scope.addRecipeForm.$setPristine(); // reset Form
 				}
@@ -68,9 +65,13 @@
 			
 
 			$scope.submit = function() {
+			
 				$scope.addRecipe();
 
 				$scope.reset();
+				
+				console.log($scope.recipe.ingredients);
+				
 			}
 			
 			$scope.amounts = function() {
@@ -82,7 +83,10 @@
 			$scope.addRecipe = function() {
 				$scope.success = false;
 				$scope.failure = false;
+			  	
 				
+			  	
+			  	
 				$http.post("/api/v1/recipes", $scope.recipe).then(
 						function(success) {
 							$scope.success = true;
@@ -154,21 +158,22 @@
 					</div>
 					
 					<div class="row">
-                        <div class="form-group col-md-12">
-                        <label class="col-md-2 control-lable" for="file">Ingredient(s)</label>
-                        <select name="selectedIngredients">
-                            <option value="">Select ingredient(s)</option>
-                            <option ng-repeat="ingredient in ingredients" value="{{ingredient.name}}" ng-click="show">{{ingredient.name}}</option>
-                        </select>
-                        <div class="col-md-2 control-lable" ng-show="selectedIngredients !== ''">
-								<input type="text" ng-model="recipe.ingredients" name="ingredient"
-									class="ingredient form-control input-sm"
-									placeholder="Enter ingredient amount" required="0" />                     
-   
+						<div class="form-group col-md-12">
+							<label class="col-md-2 control-lable" for="file">Select ingredients to add to the recipe </label>
+							<div class="col-md-7">
+								<div ng-repeat="ingredient in ingredients track by $index">
+									<input type="checkbox" data-checklist-model="recipe.ingredients[$index]" data-checklist-value = "ingredient">{{ingredient.name}}</input>
+									<input type = "text" ng-model = "recipe.ingredients[$index].amount" placeholder="Enter ingredient amount"></input><br/>
+								</div>
+								
+								<div class="has-error" ng-show="addRecipeForm.$dirty">
+										<span ng-show="addRecipeForm.recipe.ingredients[$index].amount.$error.min">Minimum amount is 0</span> 
+										<span ng-show="addRecipeForm.recipe.ingredients[$index].amount.$invalid">This field is invalid </span>
+								</div>
+							</div>
+							
 						</div>
-                        </div>
-                    </div>
-					
+					</div>
 				
 					<div class="row">
 						<div class="form-actions floatRight">
