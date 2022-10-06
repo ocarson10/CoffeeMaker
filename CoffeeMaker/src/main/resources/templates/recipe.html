@@ -3,6 +3,9 @@
 <head>
 <title>Add a Recipe</title>
 <style>
+.ingSpacing {
+	padding-left: 31px;
+}
 .username.ng-valid {
 	background-color: lightgreen;
 }
@@ -28,173 +31,308 @@
 </head>
 <body>
 	<script
-		src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.js"></script>
+	src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.js"></script>
 
 	<script>
-		/*<![CDATA[*/
-		var app = angular.module('myApp', []);
-		app.controller('addRecipeCtrl', function($scope, $http, $q) {
-			console.log("Hit!");
-			$http.get("/api/v1/ingredients").then(function (response) {
-  				$scope.ingredients = response.data;
-  				console.log($scope.ingredients);
-  			});
-			
-		
-			$scope.recipe = {
-					name : '',
-					price : '',
-					ingredients : []
-				
-				};
-		
-				 
-			$scope.reset = function() {
-				$scope.recipe = {
-					name : '',
-					price : '',
-					ingredients : []
-
-				
-				};
-				$scope.amount= '';
-				if (undefined != $scope.addRecipeForm) {
-					$scope.addRecipeForm.$setPristine(); // reset Form
+	/*<![CDATA[*/
+	var app = angular.module('myApp', []);
+	app.controller('addRecipeCtrl', function($scope, $http, $q) {
+	console.log("Hit!");
+	
+	/* Goes through Ingredients list and deletes the duplicate ingredients before we begin adding ingredients to a recipe*/
+	$http.get("/api/v1/ingredients").then(function (response) {
+			$scope.ingredients = response.data;
+			for(let i = 0; i < $scope.ingredients.length; i++){
+					for(let j = 0 ; j <  $scope.ingredients.length; j++){
+						if(i != j && $scope.ingredients[i].name == $scope.ingredients[j].name){
+							if($scope.ingredients[i].amount > $scope.ingredients[j].amount){
+								$scope.ingredients.splice(j,1);
+							} else{
+								$scope.ingredients.splice(i,1);
+							}
+							
+						}
+					}
 				}
-			}
-			
-
-			$scope.submit = function() {
-			
-				$scope.addRecipe();
-
-				$scope.reset();
-				
-				console.log($scope.recipe.ingredients);
-				
-			}
-			
-			$scope.amounts = function() {
-				$scope.addRecipe();
-
-				$scope.reset();
-			}
-
-			$scope.addRecipe = function() {
-				$scope.success = false;
-				$scope.failure = false;
-			  	
-				
-			  	
-			  	
-				$http.post("/api/v1/recipes", $scope.recipe).then(
-						function(success) {
-							$scope.success = true;
-							$scope.failure = false;
-						}, function(rejection) {
-							alert("Error while adding recipe");
-						});
-			}
-
-			$scope.reset();
-			
-			
-
 		});
-		/*]]>*/
+
+	/*
+	Sees if recipe was able to be added successfully
+	*/
+	$scope.addRecipe = function() {
+		$scope.success = false;
+		$scope.failure = false;
+
+		var sizeArr = $scope.recipe.ingredients.length;
+		if(sizeArr != 0){ // if recipe's ingredients list doesn't equal zero, then post the recipe to API
+			$http.post("/api/v1/recipes", $scope.recipe).then(
+					function(success) {
+						$scope.success = true;
+						$scope.failure = false;
+					}, function(rejection) {
+						$scope.success = false;
+						$scope.failure = true;
+			});
+		} else{
+			$scope.success = false;
+			$scope.failure = true;
+		}
+	}
+	
+	/*Removes the selected ingredient from the ingredients list */
+	$scope.deleteCurrentIngredientSelected = function( selectedIngredientName ) {
+		var deletedIngredientSelected = null;
+		var length = $scope.ingredients.length;
+		for ( let i = 0; i < length; i++ ) {
+			var ingredientName =  $scope.ingredients[ i ].name;
+			if (ingredientName == selectedIngredientName ) {
+				deletedIngredientSelected = $scope.ingredients.splice( i, 1 );
+				return deletedIngredientSelected;
+			}
+		}
+		return deletedIngredientSelected;
+	}
+	
+	/*Removes the newly added ingredient from the recipe's ingredient list */
+	$scope.deleteNewSelectedIngredient = function( selectedIngredientName ) {
+		var removedIngredient = null;
+		var length = $scope.recipe.ingredients.length;
+		for ( let i = 0; i < length ; i++ ) {
+			var ingrName = $scope.recipe.ingredients[ i ].name;
+			if ( ingrName == selectedIngredientName ) {
+				removedIngredient = $scope.recipe.ingredients.splice( i, 1 );
+				return removedIngredient;
+			}
+		}
+		return removedIngredient;	
+	}
+	
+	
+	
+	/*
+		This is the embedded HTML function that will allow users to input new amount for specific ingredients
+		they want to add to a recipe
+		Methods to create divs and input HTML from the controller was adapted from: https://developer.mozilla.org/en-US/docs/Web/API/Document/createElement
+	*/
+	$scope.addSelectedIngredient = function() {
+		$scope.recipe.ingredients.push( $scope.addNewIngredient ); // we'll push the new ingredient first to the recipe's ingredient list
+		$scope.deleteCurrentIngredientSelected( $scope.addNewIngredient.name ); // but delete it from the list so that there's no duplicates
+	
+	
+		/* Lines 168-188 will look something like this: 
+				<div class="form-group col-md-12">
+					<label class="col-md-2 control-lable" for="file">Ingredient Name</label>
+				<div class="col-md-7">
+		*/
+		var ingredientBlock = document.createElement( 'div' );
+		// this will be the main outer div of the ingredient as a row 
+		ingredientBlock.className = "row";
+		ingredientBlock.setAttribute( 'id', $scope.addNewIngredient.name + "selected Block" );
+			// nested div that will form the column size of the selected ingredient 
+			var ingredientColumn = document.createElement( 'div' );
+			ingredientColumn.className = "form-group col-md-12";
+			
+			ingredientBlock.append( ingredientColumn ); // outer div will append inner column 
+
+				// holds the label name of the selected ingredient 
+				var selectedIngredientName = document.createElement( 'label' );
+				selectedIngredientName.className = "col-md-2 control-lable";
+				selectedIngredientName.setAttribute( 'for', 'file' );
+				selectedIngredientName.innerHTML = $scope.addNewIngredient.name;
+				
+				ingredientColumn.append( selectedIngredientName ); // ingr column will append the selected ingredient name
+				
+				// this will be a nested inner column that will block out the textbox to size 7 
+				var textboxColumn = document.createElement( 'div' );
+				textboxColumn.className = "col-md-7";
+				
+				ingredientColumn.append( textboxColumn ); // ingr column will append the textbox column 
+
+				/* The following will look something like: 
+					<input id="ingredient.name" type="text" class="price form-control input-sm"
+					 	placeholder="Enter recipe price" required="0" />
+				*/
+					// this will be the textbook where users can input the amount for each ingredient 
+					var selectedIngredientAmount = document.createElement( 'input' );
+					selectedIngredientAmount.setAttribute( 'id', $scope.addNewIngredient.name );
+					selectedIngredientAmount.setAttribute( 'type', 'number' );
+					selectedIngredientAmount.className = "name form-control input-sm";
+					selectedIngredientAmount.setAttribute( 'placeholder', 'Enter ' + $scope.addNewIngredient.name + ' amount' );
+					selectedIngredientAmount.setAttribute( 'required', '0' );
+					
+					textboxColumn.append( selectedIngredientAmount ); // then textbox column will append the selected amount 
+
+					// this will then remove the selected ingredient from the recipe 
+					var deleteSelectedIngredient = document.createElement( 'button' );
+					deleteSelectedIngredient.setAttribute( 'type', 'button' );
+					deleteSelectedIngredient.innerHTML = "Delete " + $scope.addNewIngredient.name;
+					deleteSelectedIngredient.onclick = function() {
+						$scope.deleteIngredientBlock( selectedIngredientAmount.id, true );
+					}
+					ingredientColumn.append( deleteSelectedIngredient ); // removes the selected ingredient
+		
+			document.querySelector( 'body > div > div > div.formcontainer > form > div.ingredientsList' ).append( ingredientBlock );	
+			
+	}
+	
+	/** checks if ingredient value is valid*/
+	$scope.checkValidIngredient = false;
+	
+	/*Checks the ingredient to see if it's valid; sets boolean value to true/false respectively*/
+	$scope.checkIngredient = function() {
+		try {
+			$scope.checkValidIngredient = true;
+		} catch (err) {
+			$scope.checkValidIngredient = false;
+		}
+	}
+	
+	/*Updates the recipe's ingredients list so that it can have the new value for each ingredient inside the recipe*/
+	$scope.modifyIngredientsList = function() {
+		var length =  $scope.recipe.ingredients.length;
+		for ( let i = 0; i < length; i++ ) {
+			var ingredientName = $scope.recipe.ingredients[ i ].name;
+			$scope.recipe.ingredients[ i ].amount = document.getElementById( ingredientName  ).value;
+			$scope.recipe.ingredients[i].id = null;
+		}
+	} 
+	
+	
+
+	/*Removes the selected ingredient block from the recipe */
+	$scope.deleteIngredientBlock = function( selectedIngredientName, changeIngredientBoolean ) {
+		document.getElementById( selectedIngredientName + "selected Block" ).remove();
+
+		$scope.ingredients.push( $scope.deleteNewSelectedIngredient( selectedIngredientName )[ 0 ] );
+		$scope.boolUpdate(changeIngredientBoolean);
+		
+	}
+	
+	$scope.boolUpdate = function(changeIngredientValue) {
+		if(changeIngredientValue){
+			$scope.$apply();
+		}
+		
+	}
+	
+	
+	$scope.reset = function() {
+		$scope.recipe = {
+			name : '',
+			price : '',
+			ingredients: []
+		};
+	
+	
+		if (undefined != $scope.addRecipeForm) {
+			$scope.addRecipeForm.$setPristine(); // reset Form
+		}
+	
+		$scope.submit = function() {
+			$scope.modifyIngredientsList();
+			$scope.addRecipe();
+			$scope.reset();
+			setTimeout(function(){
+				   window.location.reload();
+			}, 2000);
+		}
+	
+	}
+	
+	/*Resets the recipe form to be clear of name, price, and any ingredients that could have been added*/
+	$scope.clearRecipeForm = function() {
+		var listSize = $scope.recipe.ingredients.length;
+		while ( listSize != 0 ) {
+			// deleteIngredientBlock removes the ingredient's row that shows up for text input after it was added to recipe
+			$scope.deleteIngredientBlock( $scope.recipe.ingredients[ 0 ].name, false );
+			listSize = $scope.recipe.ingredients.length;
+		}
+		$scope.reset();
+		setTimeout(function(){
+		   window.location.reload();
+		}, 2000);
+	}
+	
+	
+	$scope.reset();
+
+	});
+	/*]]>*/
 	</script>
 
 
 
-	<div ng-app="myApp" class="generic-container ng-cloak"
-		ng-controller="addRecipeCtrl">
-	
-		<div class="panel panel-default">
-			<div class="panel-heading">
-				<span class="lead">Add a Recipe</span>
-			</div>
-			
-
-			<div class="formcontainer">
-				<form ng-submit="submit()" name="addRecipeForm"
-					class="form-horizontal">
-
-					
-						
-
-					<div class="row">
-						<div class="form-group col-md-12">
-							<label class="col-md-2 control-lable" for="file">Name</label>
-							<div class="col-md-7">
-								<input type="text" ng-model="recipe.name" name="name"
-									class="name form-control input-sm"
-									placeholder="Enter recipe name" required="0" />
-								<div class="has-error" ng-show="addRecipeForm.$dirty">
-									<span ng-show="addRecipeForm.name.$error.required">This
-										is a required field</span> <span
-										ng-show="addRecipeForm.name.$invalid">This field is
-										invalid </span>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<div class="row">
-						<div class="form-group col-md-12">
-							<label class="col-md-2 control-lable" for="file">Price</label>
-							<div class="col-md-7">
-								<input type="text" ng-model="recipe.price" name="price"
-									class="price form-control input-sm"
-									placeholder="Enter recipe price" required="0" />
-								<div class="has-error" ng-show="addRecipeForm.$dirty">
-									<span ng-show="addRecipeForm.price.$error.required">This
-										is a required field</span> <span
-										ng-show="addRecipeForm.price.$error.min">Minimum amount
-										is 0</span> <span ng-show="addRecipeForm.price.$invalid">This
-										field is invalid </span>
-								</div>
-							</div>
-						</div>
-					</div>
-					
-					<div class="row">
-						<div class="form-group col-md-12">
-							<label class="col-md-2 control-lable" for="file">Select ingredients to add to the recipe </label>
-							<div class="col-md-7">
-								<div ng-repeat="ingredient in ingredients track by $index">
-									<input type="checkbox" data-checklist-model="recipe.ingredients[$index]" data-checklist-value = "ingredient">{{ingredient.name}}</input>
-									<input type = "text" ng-model = "recipe.ingredients[$index].amount" placeholder="Enter ingredient amount"></input><br/>
-								</div>
-								
-								<div class="has-error" ng-show="addRecipeForm.$dirty">
-										<span ng-show="addRecipeForm.recipe.ingredients[$index].amount.$error.min">Minimum amount is 0</span> 
-										<span ng-show="addRecipeForm.recipe.ingredients[$index].amount.$invalid">This field is invalid </span>
-								</div>
-							</div>
-							
-						</div>
-					</div>
-				
-					<div class="row">
-						<div class="form-actions floatRight">
-							<input type="submit" value="Submit"
-								class="btn btn-primary btn-sm"
-								ng-disabled="addRecipeForm.$invalid" />
-							<button type="button" ng-click="reset()"
-								class="btn btn-warning btn-sm"
-								ng-disabled="addRecipeForm.$pristine">Reset Form</button>
-						</div>
-					</div>
-				</form>
-			</div>
-			<div ng-show="success">Recipe Created</div>
-			<div ng-show="failure">Error while adding recipe.</div>
-		</div>
-
-		<a href="/index">Home</a>
+	<div ng-app="myApp" class="generic-container ng-cloak" ng-controller="addRecipeCtrl as ctrl">
+	<div class="panel panel-default">
+	<div class="panel-heading">
+	<span class="lead">Add a Recipe</span>
 	</div>
 
+	<div class="formcontainer">
+	<form ng-submit="submit()" name="addRecipeForm"
+	class="form-horizontal">
 
+		<div class="row">
+			<div class="form-group col-md-12">
+				<label class="col-md-2 control-lable" for="file">Name</label>
+				<div class="col-md-7">
+					<input type="text" ng-model="recipe.name" name="name"
+						class="name form-control input-sm"
+						placeholder="Enter recipe name" required="0" />
+					<div class="has-error" ng-show="addRecipeForm.$dirty">
+						<span ng-show="addRecipeForm.name.$error.required">This is a required field</span> 
+						<span ng-show="addRecipeForm.name.$invalid">This field is invalid </span>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="form-group col-md-12">
+				<label class="col-md-2 control-lable" for="file">Price</label>
+				<div class="col-md-7">
+					<input type="number" ng-model="recipe.price" name="price"
+						class="price form-control input-sm"
+						placeholder="Enter recipe price" required="0" />
+					<div class="has-error" ng-show="addRecipeForm.$dirty">
+						<span ng-show="addRecipeForm.price.$error.required">This is a required field</span> 
+						<span ng-show="addRecipeForm.price.$error.min">Minimum amount is 0</span> 
+						<span ng-show="addRecipeForm.price.$invalid">This field is invalid </span>
+					</div>
+				</div>
+			</div>
+		</div>
+					
+		<div class="panel-heading">
+			<span class="lead">Select Ingredient(s) For Recipe</span>
+		</div>
+		<div class="row">
+			<div class="ingSpacing">
+				<select ng-model="addNewIngredient" ng-change="checkIngredient()" ng-options="ingredient as ingredient.name for ingredient in ingredients" >
+					<option label="Select a new ingredient to add to the Recipe" ></option>
+				</select>
+				<button type="button" ng-click="addSelectedIngredient()" ng-disabled = "!checkValidIngredient">Add</button>
+			</div>
+		</div>
+	
+		<div class="ingredientsList"> <br/> </div>
+	
+	
+
+			<div class="row">
+				<div class="form-actions floatRight">
+					<input type="submit" value="Submit" class="btn btn-primary btn-sm" ng-disabled="addRecipeForm.$invalid" />
+					<button type="button" ng-click="clearRecipeForm()" class="btn btn-warning btn-sm" ng-disabled="addRecipeForm.$pristine">Reset Form</button>
+				</div>
+			</div>
+		</form>
+	</div>
+		<div ng-show="success">Recipe Created</div>
+		<div ng-show="failure">Error while adding recipe.</div>
+	</div>
+
+	<a href="/index">Home</a>
+	</div>
 
 </body>
 </html>
