@@ -1,10 +1,9 @@
-# CoffeeMaker
+# CoffeeMaker Fall 2022
 
-
-*Line Coverage (should be >=70%)*
+_Line Coverage (should be >=70%)_
 
 ![Coverage](.github/badges/jacoco.svg)
 
-*Branch Coverage (should be >=50%)*
+_Branch Coverage (should be >=50%)_
 
 ![Branches](.github/badges/branches.svg)
